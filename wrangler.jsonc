@@ -1,11 +1,20 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tbilisi-stays",
+  "main": "src/worker.js",
   "compatibility_date": "2026-10-19",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    { "binding": "DATA", "id": "b987ea7cc2c645bca1dd95b352667b6d" }
+  ],
+  // Pull Airbnb calendars every 15 minutes
+  "triggers": {
+    "crons": ["*/15 * * * *"]
   }
 }

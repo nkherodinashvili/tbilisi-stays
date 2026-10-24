@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root {
   --bg:#FFFFFF; --bg2:#F7F7F7; --fg:#222222; --fg2:#6A6A6A; --border:#DDDDDD;
@@ -89,6 +91,13 @@ section+section{border-top:1px solid var(--border)}
 .pdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);transition:background .2s}
 .pdot.active{background:#fff}
 .c-badges{position:absolute;top:12px;left:12px}
+.c-share{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 1px 4px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.c-share:hover{transform:scale(1.08)}
+.modal-actions{display:flex;align-items:center;gap:6px}
+.modal-share{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:underline;transition:background .2s}
+.modal-share:hover{background:var(--bg2)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:var(--fg);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:500;z-index:1100;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 .badge-superhost{background:#fff;border-radius:20px;padding:5px 11px;font-size:13px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 
 /* Card body */
@@ -152,8 +161,19 @@ section+section{border-top:1px solid var(--border)}
 #lbCounter{position:absolute;bottom:14px;color:rgba(255,255,255,.7);font-size:13px}
 
 /* ===== MAP ===== */
-.map-frame{width:100%;height:400px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
-.map-frame iframe{width:100%;height:100%;border:0}
+.map-frame{width:100%;height:440px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+#map{width:100%;height:100%;z-index:0}
+.map-pin-wrap{background:none;border:none}
+.map-pin{display:inline-block;transform:translate(-50%,-50%);background:#fff;color:var(--fg);border-radius:20px;padding:5px 11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .15s,background .15s,color .15s}
+.map-pin:hover{background:var(--fg);color:#fff;transform:translate(-50%,-50%) scale(1.08)}
+.leaflet-popup-content-wrapper{border-radius:12px;font-family:'DM Sans',sans-serif}
+.leaflet-popup-content{margin:14px 16px}
+.mp-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.mp-loc{color:var(--fg2);font-size:13px;margin-bottom:10px}
+.mp-actions{display:flex;gap:6px;flex-wrap:wrap}
+.mp-btn{border-radius:8px;padding:7px 11px;font-size:13px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--fg)!important}
+.mp-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff!important}
+.map-note{color:var(--fg2);font-size:13px;margin-top:10px}
 
 /* ===== REVIEWS ===== */
 .reviews-tabs,.nearby-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
@@ -268,6 +288,10 @@ footer a:hover{color:#fff}
 .photo-add{width:100%;aspect-ratio:1;border:2px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--fg2);cursor:pointer}
 .photo-add:hover{border-color:var(--accent);color:var(--accent)}
 .sub-list{font-size:13px}
+.bl-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.bl-chip{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:3px 6px 3px 10px;font-size:12px}
+.bl-chip button{width:18px;height:18px;border-radius:50%;background:#dc3545;color:#fff;font-size:12px;line-height:1}
+.bl-msg{font-size:12px;color:var(--accent);margin-top:6px;min-height:16px}
 .sub-list-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}
 
 /* ===== SYNC STATUS ===== */
@@ -355,12 +379,8 @@ footer a:hover{color:#fff}
   <div class="container">
     <h2 class="section-title" data-i18n="map_title">All locations on map</h2>
     <p class="section-sub" data-i18n="map_sub">All three apartments are in the best neighborhoods of Tbilisi.</p>
-    <div class="map-frame">
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m20!1m8!1m3!1d11909.44!2d44.793!3d41.6938!3m2!1i1024!2i768!4f13.1!4m9!3e6!4m3!3m2!1d41.6938!2d44.793!4m3!3m2!1d41.6978!2d44.7832!5e0!3m2!1sen!2sge!4v1700000000000!5m2!1sen!2sge&markers=color:green%7Clabel:M%7C41.6938,44.793&markers=color:green%7Clabel:N%7C41.6978,44.7832&markers=color:green%7Clabel:B%7C41.6878,44.8038"
-        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-        title="Tbilisi Stays locations"></iframe>
-    </div>
+    <div class="map-frame"><div id="map"></div></div>
+    <p class="map-note" data-i18n="map_note">Tap a price to see the apartment or open it in Google Maps.</p>
   </div>
 </section>
 
@@ -490,7 +510,10 @@ footer a:hover{color:#fff}
   <div class="modal">
     <div class="modal-head">
       <div class="modal-title" id="modalTitle"></div>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="modal-actions">
+        <button class="modal-share" onclick="shareApt(currentApt)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></svg><span data-i18n="share">Share</span></button>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
     </div>
     <div class="modal-gallery" id="modalGallery"></div>
     <div class="modal-body">
@@ -558,7 +581,7 @@ footer a:hover{color:#fff}
       <div class="admin-row">
         <div class="admin-field">
           <label>Apartment</label>
-          <select id="photoApt" onchange="renderPhotoGrid()">
+          <select id="photoApt" onchange="renderPhotoGrid();document.getElementById('photoMsg').textContent=''">
             <option value="mel">მელიქიშვილი</option>
             <option value="nik">ნიკოლაძე</option>
             <option value="bar">ბარათაშვილი</option>
@@ -569,6 +592,7 @@ footer a:hover{color:#fff}
       <input type="file" id="photoFile" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
       <button class="admin-btn" style="margin-top:8px;width:100%" onclick="document.getElementById('photoFile').click()">+ Upload Photos</button>
       <button class="admin-btn danger" style="margin-top:6px;width:100%" onclick="deleteAllPhotos()">Delete All Photos for This Apt</button>
+      <div class="bl-msg" id="photoMsg">Tip: click a photo to make it the main one.</div>
     </div>
 
     <!-- DESCRIPTIONS -->
@@ -594,9 +618,8 @@ footer a:hover{color:#fff}
     <!-- ABOUT ME -->
     <div class="admin-section">
       <h3>About Me Text</h3>
-      <div class="admin-field">
-        <textarea id="aboutMeText" rows="4"></textarea>
-      </div>
+      <div class="admin-field"><label>English</label><textarea id="aboutEn" rows="4"></textarea></div>
+      <div class="admin-field" style="margin-top:8px"><label>ქართული</label><textarea id="aboutKa" rows="4"></textarea></div>
       <button class="admin-btn" style="margin-top:8px" onclick="saveAboutMe()">Save About Me</button>
     </div>
 
@@ -616,7 +639,7 @@ footer a:hover{color:#fff}
     <div class="admin-section">
       <h3>Revenue</h3>
       <div class="admin-row">
-        <div class="admin-field"><label>Month</label><input type="month" id="revMonth" value="2026-10"></div>
+        <div class="admin-field"><label>Month</label><input type="month" id="revMonth" value="2026-10" onchange="renderAdminCharts()"></div>
       </div>
       <div class="admin-row">
         <div class="admin-field"><label>Airbnb ($)</label><input type="number" id="revAirbnb" placeholder="0"></div>
@@ -659,17 +682,33 @@ footer a:hover{color:#fff}
       </div>
     </div>
 
+    <!-- AIRBNB SYNC -->
+    <div class="admin-section">
+      <h3>Airbnb Calendar Sync</h3>
+      <p style="font-size:13px;color:var(--fg2);margin-bottom:10px">Dates booked or blocked on Airbnb block here automatically (checked every 15 min). Dates you block here appear on Airbnb after Airbnb refreshes the imported calendar (Airbnb does this every few hours).</p>
+      <div id="syncRows"></div>
+      <div class="admin-row" style="margin-top:4px">
+        <button class="admin-btn" onclick="saveIcalUrls()">Save links</button>
+        <button class="admin-btn" style="background:var(--fg)" onclick="syncNow()">Sync now</button>
+      </div>
+    </div>
+
     <!-- DATE BLOCKING -->
     <div class="admin-section">
       <h3>Block/Unblock Dates</h3>
       <div class="admin-row">
         <div class="admin-field"><label>Apartment</label>
-          <select id="blApt"><option value="mel">Mel</option><option value="nik">Nik</option><option value="bar">Bar</option></select>
+          <select id="blApt" onchange="renderBlockedList()"><option value="mel">Mel</option><option value="nik">Nik</option><option value="bar">Bar</option></select>
         </div>
-        <div class="admin-field"><label>Date</label><input type="date" id="blDate"></div>
+        <div class="admin-field"><label>From</label><input type="date" id="blDate" onchange="document.getElementById('blDateTo').min=this.value"></div>
+        <div class="admin-field"><label>To (optional)</label><input type="date" id="blDateTo"></div>
+      </div>
+      <div class="admin-row">
         <button class="admin-btn" onclick="blockDate()">Block</button>
         <button class="admin-btn danger" onclick="unblockDate()">Unblock</button>
       </div>
+      <div class="bl-msg" id="blMsg"></div>
+      <div class="bl-list" id="blList"></div>
     </div>
 
     <!-- SUBSCRIBERS -->
@@ -681,6 +720,8 @@ footer a:hover{color:#fff}
 
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 // ===== I18N =====
@@ -717,6 +758,8 @@ const T = {
     cal_title:'Check availability & price',cal_in:'Check-in',cal_out:'Check-out',
     modal_book_btn:'Send booking request via WhatsApp',
     night:'night',dates_left:'Only {n} dates left this month',
+    share:'Share',link_copied:'Link copied',share_text:'Take a look at this apartment in Tbilisi',
+    map_view:'View apartment',map_open:'Open in Google Maps',map_note:'Tap a price to see the apartment or open it in Google Maps.',
     nights:'nights',cleaning:'Cleaning fee',total:'Total',
     blocked_msg:'⚠️ One or more dates in this period are unavailable. Please try different dates.',
     date_order_msg:'Check-out must be after check-in.',
@@ -757,6 +800,8 @@ const T = {
     cal_title:'შეამოწმეთ ხელმისაწვდომობა',cal_in:'შემოსვლა',cal_out:'გასვლა',
     modal_book_btn:'WhatsApp-ით ჯავშნა',
     night:'ღამე',dates_left:'ამ თვეში მხოლოდ {n} თავისუფალი თარიღია',
+    share:'გაზიარება',link_copied:'ბმული დაკოპირდა',share_text:'ნახე ეს ბინა თბილისში',
+    map_view:'ბინის ნახვა',map_open:'Google Maps-ში გახსნა',map_note:'დააჭირეთ ფასს ბინის სანახავად ან Google Maps-ში გასახსნელად.',
     nights:'ღამე',cleaning:'დასუფთავება',total:'სულ',
     blocked_msg:'⚠️ ამ პერიოდში ერთი ან მეტი თარიღი დაკავებულია.',
     date_order_msg:'გამოსვლის თარიღი შემოსვლის შემდეგ უნდა იყოს.',
@@ -778,55 +823,43 @@ function setLang(l){
   renderCards();
   renderRules();
   renderFAQ();
-  // update about text if not overridden
-  const stored=localStorage.getItem('aboutMe_'+l)||localStorage.getItem('aboutMe');
-  document.getElementById('aboutText').textContent=stored||T[l].about_text;
+  renderAbout();
 }
 function t(k){return T[lang][k]||T['en'][k]||k;}
 
 // ===== DATA =====
 const APTS = {
   mel: {
-    name:'მელიქიშვილი', loc:'Vera უბანი', price:62, airbnbPrice:65, cleaning:65,
+    name:'მელიქიშვილი', loc:'Vera უბანი', price:62,
+    lat:41.7070389, lng:44.7850254, mapsUrl:'', airbnbPrice:65, cleaning:65,
     rating:4.95, reviews:190, guests:6, beds:3, baths:2,
     lastBooked:'2 days ago',
     freeThisMonth:8,
     photos:[],
-    defaultPhotos:[
-      'https://a0.muscache.com/im/pictures/miso/Hosting-30368959/original/f4bfbc23-0eb5-4d26-8316-8cc0ca98bfe7.jpeg',
-      'https://a0.muscache.com/im/pictures/miso/Hosting-30368959/original/8bc3c68e-3cd7-4437-af86-4e5289f8e7d0.jpeg',
-      'https://a0.muscache.com/im/pictures/miso/Hosting-30368959/original/f3f28a1c-f581-45f4-a9e2-d60d7a62f2ab.jpeg',
-    ],
     chips:['3 bed','6 guests','Parking','WiFi'],
     airbnbUrl:'https://www.airbnb.com/rooms/30368959',
     desc:{en:'Spacious 3-bedroom apartment in the heart of Vera — Tbilisi\'s most desirable neighborhood. Bright rooms, full kitchen, parking, and everything you need for a comfortable stay. 15 min walk to Rustaveli.',
           ka:'სივრცული 3-ოთახიანი ბინა Vera-ს ცენტრში — თბილისის ყველაზე სასურველ უბანში. გაბრწყინებული ოთახები, სრული სამზარეულო, პარკინგი. 15 წუთი ფეხით მეტეხამდე.'}
   },
   nik: {
-    name:'ნიკოლაძე', loc:'Vera Center', price:43, airbnbPrice:45, cleaning:35,
+    name:'ნიკოლაძე', loc:'Vera Center', price:43,
+    lat:41.7098069, lng:44.7821589, mapsUrl:'', airbnbPrice:45, cleaning:35,
     rating:4.88, reviews:74, guests:3, beds:1, baths:1,
     lastBooked:'5 days ago',
     freeThisMonth:12,
     photos:[],
-    defaultPhotos:[
-      'https://a0.muscache.com/im/pictures/miso/Hosting-1660044826140606826/original/fe55d3e3-3fcf-40e9-aa3d-68d9a8b4d6fa.jpeg',
-      'https://a0.muscache.com/im/pictures/miso/Hosting-1660044826140606826/original/cb0cfa89-fe48-490a-91fe-9c3d35e45d3f.jpeg',
-    ],
     chips:['1 bed','3 guests','WiFi','Central'],
     airbnbUrl:'https://www.airbnb.com/rooms/1660044826140606826',
     desc:{en:'Cozy 1-bedroom apartment in Vera Center — steps from cafes, restaurants, and the Rustaveli metro. Perfect for couples or solo travelers seeking a quiet base in the city.',
           ka:'მყუდრო 1-ოთახიანი ბინა Vera Center-ში — კაფეებიდან, რესტორნებიდან და Rustaveli-ს მეტროსგან ნაბიჯებში. იდეალური წყვილებისა და მარტო მოგზაურებისთვის.'}
   },
   bar: {
-    name:'ბარათაშვილი', loc:'ძველი თბილისი', price:67, airbnbPrice:71, cleaning:55,
+    name:'ბარათაშვილი', loc:'ძველი თბილისი', price:67,
+    lat:41.6970107, lng:44.8061892, mapsUrl:'', airbnbPrice:71, cleaning:55,
     rating:4.90, reviews:58, guests:5, beds:2, baths:1,
     lastBooked:'1 day ago',
     freeThisMonth:6,
     photos:[],
-    defaultPhotos:[
-      'https://a0.muscache.com/im/pictures/miso/Hosting-1368772735616662381/original/3aac0bcc-8a20-4d89-ad74-73c4e3f91c55.jpeg',
-      'https://a0.muscache.com/im/pictures/miso/Hosting-1368772735616662381/original/bc58db9f-1571-4e8a-a4ec-0d1f0ddb6d2b.jpeg',
-    ],
     chips:['2 bed','5 guests','Old Town views','WiFi'],
     airbnbUrl:'https://www.airbnb.com/rooms/1368772735616662381',
     desc:{en:'Unique 2-bedroom apartment in the heart of Old Tbilisi. Windows face both the courtyard and the historic Baratashvili street. Waking up to Old Town views is magical.',
@@ -944,37 +977,50 @@ const DEFAULT_RULES = [
 ];
 
 // ===== STATE =====
-let bookedDates={mel:[],nik:[],bar:[]};
-let manualBlocked=JSON.parse(localStorage.getItem('manualBlocked')||'{"mel":[],"nik":[],"bar":[]}');
-let priceOverrides=JSON.parse(localStorage.getItem('priceOverrides')||'{}');
-let adminBookings=JSON.parse(localStorage.getItem('adminBookings')||'[]');
-let revenueData=JSON.parse(localStorage.getItem('revenueData')||'{}');
-let subscribers=JSON.parse(localStorage.getItem('subscribers')||'[]');
-let customRules=JSON.parse(localStorage.getItem('customRules')||'null');
-let customDescs=JSON.parse(localStorage.getItem('customDescs')||'{}');
+// Everything editable lives on the server (/api); these hold the last loaded copy.
+let blockedDates={mel:[],nik:[],bar:[]};
+let priceOverrides={};
+let customDescs={};
+let customRules=null;
+let aboutTexts={};
+let adminToken='';
+let adminState=null;
 let currentApt=null;
 let currentLbPhotos=[];
 let currentLbIdx=0;
 let touchStartX=0;
 
-// Load custom photos into APTS
-function loadPhotos(){
-  Object.keys(APTS).forEach(id=>{
-    const stored=JSON.parse(localStorage.getItem('photos_'+id)||'null');
-    APTS[id].photos=stored&&stored.length?stored:APTS[id].defaultPhotos;
-  });
+async function api(path,opts={}){
+  const headers={...(opts.headers||{})};
+  if(opts.json!==undefined){headers['Content-Type']='application/json';opts.body=JSON.stringify(opts.json);}
+  if(adminToken) headers.Authorization='Bearer '+adminToken;
+  const res=await fetch('/api/'+path,{method:opts.method||'GET',headers,body:opts.body});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error||('Request failed ('+res.status+')'));
+  return data;
 }
-loadPhotos();
 
-// Load custom descriptions
-function loadAllDescs(){
-  Object.keys(APTS).forEach(id=>{
-    if(customDescs[id]){
-      APTS[id].desc.custom=customDescs[id];
-    }
-  });
+async function loadPublic(){
+  try{
+    const s=await api('public');
+    Object.entries(s.apts).forEach(([id,a])=>{
+      if(!APTS[id]) return;
+      APTS[id].photos=a.photos.map(p=>p.url);
+      blockedDates[id]=a.blocked;
+      if(a.price) priceOverrides[id]=a.price; else delete priceOverrides[id];
+      if(a.desc) customDescs[id]=a.desc; else delete customDescs[id];
+    });
+    aboutTexts=s.about||{};
+    customRules=s.rules;
+  }catch(e){
+    console.warn('Could not load live data:',e.message);
+  }
 }
-loadAllDescs();
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderAbout(){
+  document.getElementById('aboutText').textContent=aboutTexts[lang]||aboutTexts.en||T[lang].about_text;
+}
 
 // ===== SEARCH =====
 let searchDates={in:'',out:''};
@@ -1010,6 +1056,7 @@ function renderCards(){
         <div class="c-badges">
           <div class="badge-superhost">Superhost</div>
         </div>
+        <button class="c-share" onclick="event.stopPropagation();shareApt('${id}')" aria-label="${t('share')}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></svg></button>
       </div>
       <div class="c-body">
         <div class="c-head">
@@ -1061,10 +1108,12 @@ function openModal(id){
   document.getElementById('modalOut').value=searchDates.out;
   document.getElementById('priceResult').innerHTML='';
   calcModal();
+  try{history.replaceState(null,'','?apt='+id);}catch(e){}
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closeModal(){
+  try{history.replaceState(null,'',location.pathname);}catch(e){}
   document.getElementById('modalOverlay').classList.remove('open');
   document.body.style.overflow='';
 }
@@ -1083,7 +1132,7 @@ function calcModal(){
   if(d2<=d1){res.innerHTML=`<div class="price-msg">${t('date_order_msg')}</div>`;return;}
   const nights=Math.round((d2-d1)/86400000);
   if(nights<1){res.innerHTML='';return;}
-  const allBlocked=[...bookedDates[id],...(manualBlocked[id]||[])];
+  const allBlocked=blockedDates[id]||[];
   let cur=new Date(d1),blocked=false;
   while(cur<d2){
     if(allBlocked.includes(cur.toISOString().split('T')[0])){blocked=true;break;}
@@ -1116,6 +1165,60 @@ function bookModal(){
     ?`Hello Nino! I'd like to book ${a.name}: ${inVal} to ${outVal}.`
     :`Hello Nino! I'm interested in booking ${a.name}.`;
   window.open(`https://wa.me/995599161004?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ===== SHARE =====
+function aptUrl(id){return location.href.split(/[?#]/)[0]+'?apt='+id;}
+function shareApt(id){
+  const a=APTS[id];
+  const url=aptUrl(id);
+  if(navigator.share){
+    navigator.share({title:a.name+' — Tbilisi Stays',text:t('share_text'),url}).catch(()=>{});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>showToast(t('link_copied')),()=>prompt('',url));
+  } else {
+    prompt('',url);
+  }
+}
+let toastTimer;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+// ===== MAP =====
+function googleMapsUrl(a){return a.mapsUrl||`https://www.google.com/maps/search/?api=1&query=${a.lat},${a.lng}`;}
+const mapMarkers={};
+function refreshMapPrices(){
+  Object.entries(mapMarkers).forEach(([id,m])=>{
+    m.setIcon(L.divIcon({className:'map-pin-wrap',html:`<div class="map-pin">$${priceOverrides[id]||APTS[id].price}</div>`,iconSize:null}));
+  });
+}
+function initMap(){
+  if(!window.L) return;
+  const map=L.map('map',{scrollWheelZoom:false});
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom:19
+  }).addTo(map);
+  const pts=[];
+  Object.entries(APTS).forEach(([id,a])=>{
+    const price=priceOverrides[id]||a.price;
+    mapMarkers[id]=L.marker([a.lat,a.lng],{icon:L.divIcon({className:'map-pin-wrap',html:`<div class="map-pin">$${price}</div>`,iconSize:null})})
+      .addTo(map)
+      .bindPopup(()=>`
+        <div class="mp-name">${a.name}</div>
+        <div class="mp-loc">${a.loc}</div>
+        <div class="mp-actions">
+          <button class="mp-btn primary" onclick="openModal('${id}')">${t('map_view')}</button>
+          <a class="mp-btn" href="${googleMapsUrl(a)}" target="_blank">${t('map_open')}</a>
+        </div>`,{offset:[0,-8]});
+    pts.push([a.lat,a.lng]);
+  });
+  map.fitBounds(pts,{padding:[60,60],maxZoom:15});
 }
 
 // ===== LIGHTBOX =====
@@ -1231,29 +1334,58 @@ function submitContact(){
 function submitSub(){
   const email=document.getElementById('subEmail').value;
   if(!email||!email.includes('@')) return;
-  if(!subscribers.includes(email)) subscribers.push(email);
-  try{localStorage.setItem('subscribers',JSON.stringify(subscribers));}catch(e){}
-  document.getElementById('subSuccess').style.display='block';
+  api('subscribe',{method:'POST',json:{email}}).then(()=>{
+    document.getElementById('subSuccess').style.display='block';
+    setTimeout(()=>{document.getElementById('subSuccess').style.display='none';},4000);
+  }).catch(e=>showToast(e.message));
   document.getElementById('subEmail').value='';
-  setTimeout(()=>{document.getElementById('subSuccess').style.display='none';},4000);
 }
 
 // ===== ADMIN =====
-function checkAdmin(){
-  if(document.getElementById('adminPw').value==='tbilisi2024'){
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminContent').classList.add('show');
-    renderAdminCharts();
-    renderBookingTable();
-    renderPhotoGrid();
-    renderRulesAdmin();
-    renderSubList();
-    loadDesc();
-    const storedAbout=localStorage.getItem('aboutMe')||'';
-    document.getElementById('aboutMeText').value=storedAbout;
-  } else {
-    document.getElementById('adminErr').style.display='block';
+async function checkAdmin(){
+  const pw=document.getElementById('adminPw').value;
+  const err=document.getElementById('adminErr');
+  err.style.display='none';
+  try{
+    await api('login',{method:'POST',json:{password:pw}});
+  }catch(e){
+    err.textContent=e.message;
+    err.style.display='block';
+    return;
   }
+  adminToken=pw;
+  document.getElementById('adminPw').value='';
+  document.getElementById('adminLogin').style.display='none';
+  document.getElementById('adminContent').classList.add('show');
+  await loadAdmin();
+}
+async function loadAdmin(){
+  try{
+    adminState=await api('admin');
+  }catch(e){
+    showToast(e.message);
+    return;
+  }
+  document.getElementById('revMonth').value=new Date().toISOString().slice(0,7);
+  renderAdminCharts();
+  renderBookingTable();
+  renderPhotoGrid();
+  renderRulesAdmin();
+  renderSubList();
+  renderBlockedList();
+  renderSyncAdmin();
+  loadDesc();
+  document.getElementById('aboutEn').value=adminState.settings.about.en||'';
+  document.getElementById('aboutKa').value=adminState.settings.about.ka||'';
+}
+// Re-read public data after an edit so the visitor view matches the server
+async function refreshSite(){
+  await loadPublic();
+  renderCards();
+  renderRules();
+  renderAbout();
+  refreshMapPrices();
+  calcModal();
 }
 function openAdmin(){
   document.getElementById('adminOverlay').classList.add('open');
@@ -1267,82 +1399,112 @@ function closeAdmin(){
 // --- Photo management ---
 function renderPhotoGrid(){
   const id=document.getElementById('photoApt').value;
-  const photos=JSON.parse(localStorage.getItem('photos_'+id)||'null')||APTS[id].defaultPhotos;
-  const g=document.getElementById('photoGrid');
-  g.innerHTML=photos.map((p,i)=>`
+  const photos=adminState.photos[id]||[];
+  document.getElementById('photoGrid').innerHTML=photos.map((p,i)=>`
     <div style="position:relative">
-      <img class="photo-thumb" src="${p}" onclick="deletePhoto('${id}',${i})" title="Click to delete">
-      <div style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer" onclick="deletePhoto('${id}',${i})">×</div>
+      <img class="photo-thumb${i===0?' selected':''}" src="${p.url}" title="${i===0?'Main photo':'Click to make main photo'}" onclick="makeMainPhoto('${id}','${p.id}')">
+      <div style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer" onclick="deletePhoto('${id}','${p.id}')">×</div>
     </div>
-  `).join('');
+  `).join('')||'<p style="color:var(--fg2);font-size:13px;grid-column:1/-1">No photos yet.</p>';
 }
-function handlePhotoUpload(event){
+// Shrink to max 1600px JPEG before upload so pages stay fast
+function resizeImage(file){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1,1600/Math.max(img.width,img.height));
+      const c=document.createElement('canvas');
+      c.width=Math.round(img.width*scale);
+      c.height=Math.round(img.height*scale);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(img.src);
+      c.toBlob(b=>b?resolve(b):reject(new Error('Could not read image')),'image/jpeg',0.82);
+    };
+    img.onerror=()=>reject(new Error('Could not read '+file.name));
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function handlePhotoUpload(event){
   const id=document.getElementById('photoApt').value;
   const files=Array.from(event.target.files);
-  const existing=JSON.parse(localStorage.getItem('photos_'+id)||'[]');
-  let loaded=0;
-  files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=e=>{
-      existing.push(e.target.result);
-      loaded++;
-      if(loaded===files.length){
-        try{localStorage.setItem('photos_'+id,JSON.stringify(existing));}catch(err){
-          alert('Storage full — try uploading fewer/smaller photos.');
-          return;
-        }
-        APTS[id].photos=existing;
-        renderPhotoGrid();
-        renderCards();
-      }
-    };
-    reader.readAsDataURL(file);
-  });
   event.target.value='';
+  const msg=document.getElementById('photoMsg');
+  for(let i=0;i<files.length;i++){
+    msg.textContent=`Uploading ${i+1} of ${files.length}…`;
+    try{
+      const blob=await resizeImage(files[i]);
+      const r=await api('admin/photos/'+id,{method:'POST',body:blob,headers:{'Content-Type':'image/jpeg'}});
+      adminState.photos[id]=r.photos;
+      renderPhotoGrid();
+    }catch(e){
+      msg.textContent=`✗ ${files[i].name}: ${e.message}`;
+      return;
+    }
+  }
+  msg.textContent=`✓ Uploaded ${files.length} photo(s)`;
+  refreshSite();
 }
-function deletePhoto(id,idx){
-  const photos=JSON.parse(localStorage.getItem('photos_'+id)||'[]');
-  photos.splice(idx,1);
-  try{localStorage.setItem('photos_'+id,JSON.stringify(photos));}catch(e){}
-  APTS[id].photos=photos.length?photos:APTS[id].defaultPhotos;
+async function deletePhoto(id,pid){
+  if(!confirm('Delete this photo?')) return;
+  try{
+    adminState.photos[id]=(await api(`admin/photos/${id}/${pid}`,{method:'DELETE'})).photos;
+  }catch(e){showToast(e.message);return;}
   renderPhotoGrid();
-  renderCards();
+  refreshSite();
 }
-function deleteAllPhotos(){
+async function makeMainPhoto(id,pid){
+  const ids=adminState.photos[id].map(p=>p.id);
+  if(ids[0]===pid) return;
+  try{
+    adminState.photos[id]=(await api('admin/photos/'+id,{method:'PUT',json:[pid,...ids.filter(x=>x!==pid)]})).photos;
+  }catch(e){showToast(e.message);return;}
+  renderPhotoGrid();
+  refreshSite();
+}
+async function deleteAllPhotos(){
   const id=document.getElementById('photoApt').value;
   if(!confirm('Delete all photos for this apartment?')) return;
-  localStorage.removeItem('photos_'+id);
-  APTS[id].photos=APTS[id].defaultPhotos;
+  try{
+    adminState.photos[id]=(await api('admin/photos/'+id,{method:'DELETE'})).photos;
+  }catch(e){showToast(e.message);return;}
   renderPhotoGrid();
-  renderCards();
+  refreshSite();
 }
 
-// --- Descriptions ---
+// --- Settings (descriptions, about, rules, prices, Airbnb links) ---
+async function saveSettings(patch,okMsg){
+  try{
+    adminState.settings=(await api('admin/settings',{method:'PUT',json:patch})).settings;
+  }catch(e){showToast(e.message);return false;}
+  showToast(okMsg);
+  refreshSite();
+  return true;
+}
 function loadDesc(){
   const id=document.getElementById('descApt').value;
-  document.getElementById('descText').value=customDescs[id]||APTS[id].desc[lang]||APTS[id].desc.en;
+  document.getElementById('descText').value=adminState.settings.descs[id]||APTS[id].desc[lang]||APTS[id].desc.en;
 }
 function saveDesc(){
   const id=document.getElementById('descApt').value;
-  const val=document.getElementById('descText').value.trim();
-  customDescs[id]=val;
-  try{localStorage.setItem('customDescs',JSON.stringify(customDescs));}catch(e){}
-  alert('Description saved!');
+  saveSettings({descs:{[id]:document.getElementById('descText').value.trim()}},'✓ Description saved');
 }
-
-// --- About me ---
 function saveAboutMe(){
-  const val=document.getElementById('aboutMeText').value.trim();
-  try{localStorage.setItem('aboutMe',val);}catch(e){}
-  document.getElementById('aboutText').textContent=val||T[lang].about_text;
-  alert('About me text saved!');
+  saveSettings({about:{en:document.getElementById('aboutEn').value.trim(),ka:document.getElementById('aboutKa').value.trim()}},'✓ About text saved');
+}
+function savePrice(){
+  const id=document.getElementById('prApt').value;
+  const p=parseFloat(document.getElementById('prPrice').value);
+  saveSettings({prices:{[id]:p>0?p:null}},p>0?`✓ Price set to $${p}`:'✓ Price reset');
 }
 
 // --- Rules admin ---
+let draftRules=null;
+function getRules(){
+  return customRules||DEFAULT_RULES;
+}
 function renderRulesAdmin(){
-  const rules=getRules();
-  const g=document.getElementById('rulesAdmin');
-  g.innerHTML=rules.map((r,i)=>`
+  if(!draftRules) draftRules=(adminState.settings.rules||DEFAULT_RULES).slice();
+  document.getElementById('rulesAdmin').innerHTML=draftRules.map((r,i)=>`
     <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
       <span>${r.icon}</span>
       <span style="flex:1;font-size:13px">${r.text_en}</span>
@@ -1354,37 +1516,34 @@ function addRule(){
   const icon=document.getElementById('ruleIcon').value.trim()||'📌';
   const text=document.getElementById('ruleText').value.trim();
   if(!text) return;
-  const rules=getRules().slice();
-  rules.push({icon,text_en:text,text_ka:text});
-  customRules=rules;
+  draftRules.push({icon,text_en:text,text_ka:text});
   document.getElementById('ruleIcon').value='';
   document.getElementById('ruleText').value='';
   renderRulesAdmin();
 }
 function deleteRule(i){
-  const rules=getRules().slice();
-  rules.splice(i,1);
-  customRules=rules;
+  draftRules.splice(i,1);
   renderRulesAdmin();
 }
 function saveRules(){
-  try{localStorage.setItem('customRules',JSON.stringify(customRules));}catch(e){}
-  renderRules();
-  alert('Rules saved!');
+  saveSettings({rules:draftRules},'✓ Rules saved');
 }
 
 // --- Revenue / charts ---
-function saveRevenue(){
+async function saveRevenue(){
   const month=document.getElementById('revMonth').value;
-  const airbnb=parseFloat(document.getElementById('revAirbnb').value)||0;
-  const booking=parseFloat(document.getElementById('revBooking').value)||0;
-  const direct=parseFloat(document.getElementById('revDirect').value)||0;
-  if(!revenueData[month])revenueData[month]={};
-  revenueData[month]={airbnb,booking,direct};
-  try{localStorage.setItem('revenueData',JSON.stringify(revenueData));}catch(e){}
+  const revenue={...adminState.revenue,[month]:{
+    airbnb:parseFloat(document.getElementById('revAirbnb').value)||0,
+    booking:parseFloat(document.getElementById('revBooking').value)||0,
+    direct:parseFloat(document.getElementById('revDirect').value)||0,
+  }};
+  try{await api('admin/revenue',{method:'PUT',json:revenue});}catch(e){showToast(e.message);return;}
+  adminState.revenue=revenue;
+  showToast('✓ Revenue saved');
   renderAdminCharts();
 }
 function renderAdminCharts(){
+  const revenueData=adminState.revenue;
   const month=(document.getElementById('revMonth')||{}).value||'2026-10';
   const d=revenueData[month]||{airbnb:0,booking:0,direct:0};
   const total=d.airbnb+d.booking+d.direct||1;
@@ -1401,15 +1560,17 @@ function renderAdminCharts(){
     </div>
   `).join('');
 
+  // Occupancy = share of the next 30 nights that are blocked or booked
   const og=document.getElementById('occGrid');
   if(og){
+    const days=[...Array(30)].map((_,i)=>new Date(Date.now()+i*86400000).toISOString().split('T')[0]);
     og.innerHTML=Object.entries(APTS).map(([id,a])=>{
-      const occ=Math.round(((a.reviews%30)||18)/30*100);
-      return `<div class="stat-box"><div class="stat-val">${occ}%</div><div class="stat-label">${a.name}</div></div>`;
+      const occ=Math.round(days.filter(x=>(blockedDates[id]||[]).includes(x)).length/30*100);
+      return `<div class="stat-box"><div class="stat-val">${occ}%</div><div class="stat-label">${a.name} · next 30 days</div></div>`;
     }).join('');
   }
 
-  const months=['2026-07','2026-08','2026-09','2026-10'];
+  const months=[...Array(4)].map((_,i)=>{const x=new Date();x.setDate(1);x.setMonth(x.getMonth()-3+i);return x.toISOString().slice(0,7);});
   const mc=document.getElementById('monthlyChart');
   if(mc){
     const maxV=Math.max(...months.map(m=>{const d=revenueData[m]||{};return(d.airbnb||0)+(d.booking||0)+(d.direct||0);}),1);
@@ -1425,54 +1586,111 @@ function renderAdminCharts(){
 function renderBookingTable(){
   const tbody=document.getElementById('bookingBody');
   if(!tbody) return;
-  tbody.innerHTML=adminBookings.slice(-20).reverse().map(b=>`
-    <tr><td>${b.guest}</td><td>${b.apt}</td><td>$${b.rev}</td><td>${b.ch}</td></tr>
+  tbody.innerHTML=adminState.bookings.slice(-20).reverse().map(b=>`
+    <tr><td>${esc(b.guest)}</td><td>${b.apt}</td><td>$${esc(b.rev)}</td><td>${b.ch}</td></tr>
   `).join('');
 }
-function addBooking(){
+async function addBooking(){
   const b={guest:document.getElementById('bhGuest').value,apt:document.getElementById('bhApt').value,rev:document.getElementById('bhRev').value,ch:document.getElementById('bhCh').value,date:new Date().toISOString().split('T')[0]};
   if(!b.guest||!b.rev) return;
-  adminBookings.push(b);
-  try{localStorage.setItem('adminBookings',JSON.stringify(adminBookings));}catch(e){}
+  const bookings=[...adminState.bookings,b];
+  try{await api('admin/bookings',{method:'PUT',json:bookings});}catch(e){showToast(e.message);return;}
+  adminState.bookings=bookings;
   renderBookingTable();
   document.getElementById('bhGuest').value='';
   document.getElementById('bhRev').value='';
 }
 
-// --- Price override ---
-function savePrice(){
-  const id=document.getElementById('prApt').value;
-  const p=parseFloat(document.getElementById('prPrice').value);
-  if(p>0){priceOverrides[id]=p;}else{delete priceOverrides[id];}
-  try{localStorage.setItem('priceOverrides',JSON.stringify(priceOverrides));}catch(e){}
-  renderCards();
+// --- Date blocking ---
+function selectedBlockDates(){
+  const from=document.getElementById('blDate').value;
+  const to=document.getElementById('blDateTo').value||from;
+  if(!from||to<from) return [];
+  const out=[];
+  for(let d=new Date(from+'T00:00:00Z');d<=new Date(to+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+1)){
+    out.push(d.toISOString().split('T')[0]);
+  }
+  return out;
+}
+async function changeBlocked(dates,action){
+  const id=document.getElementById('blApt').value;
+  const msg=document.getElementById('blMsg');
+  if(!dates.length){msg.textContent='Pick a start date (and an end date on or after it).';return;}
+  msg.textContent='Saving…';
+  try{
+    adminState.blocked[id]=(await api('admin/block',{method:'POST',json:{apt:id,dates,action}})).blocked;
+  }catch(e){msg.textContent='✗ '+e.message;return;}
+  msg.textContent=`✓ ${action==='unblock'?'Unblocked':'Blocked'} ${dates.length===1?dates[0]:dates.length+' dates'}`;
+  renderBlockedList();
+  await refreshSite();
+  renderAdminCharts();
+}
+function blockDate(){return changeBlocked(selectedBlockDates(),'block');}
+function unblockDate(){return changeBlocked(selectedBlockDates(),'unblock');}
+function unblockOne(d){return changeBlocked([d],'unblock');}
+function renderBlockedList(){
+  const id=document.getElementById('blApt').value;
+  const today=new Date().toISOString().split('T')[0];
+  const list=(adminState.blocked[id]||[]).filter(d=>d>=today).sort();
+  const fromAirbnb=(adminState.airbnb[id].dates||[]).length;
+  document.getElementById('blList').innerHTML=(list.length
+    ?list.map(d=>`<span class="bl-chip">${d}<button onclick="unblockOne('${d}')" title="Unblock">×</button></span>`).join('')
+    :'<span style="color:var(--fg2);font-size:13px">No upcoming dates blocked here.</span>')
+    +(fromAirbnb?`<div style="width:100%;color:var(--fg2);font-size:12px;margin-top:4px">+ ${fromAirbnb} date(s) booked or blocked on Airbnb (change those on Airbnb).</div>`:'');
 }
 
-// --- Date blocking ---
-function blockDate(){
-  const id=document.getElementById('blApt').value;
-  const d=document.getElementById('blDate').value;
-  if(!d) return;
-  if(!manualBlocked[id].includes(d)) manualBlocked[id].push(d);
-  try{localStorage.setItem('manualBlocked',JSON.stringify(manualBlocked));}catch(e){}
+// --- Airbnb calendar sync ---
+function renderSyncAdmin(){
+  document.getElementById('syncRows').innerHTML=Object.entries(APTS).map(([id,a])=>{
+    const s=adminState.airbnb[id]||{};
+    const status=s.error
+      ?`<span style="color:#dc3545">✗ ${s.error}</span>`
+      :s.syncedAt?`✓ Synced ${new Date(s.syncedAt).toLocaleString()} · ${s.dates.length} date(s) from Airbnb`:'Not connected yet';
+    return `
+      <div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px">
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px">${a.name}</div>
+        <div class="admin-field"><label>1. Airbnb export link (paste from Airbnb)</label>
+          <input id="ical-${id}" placeholder="https://www.airbnb.com/calendar/ical/....ics" value="${adminState.settings.icalUrls[id]||''}">
+        </div>
+        <div class="admin-field" style="margin-top:6px"><label>2. Import this link into Airbnb</label>
+          <div style="display:flex;gap:6px"><input readonly value="${location.origin}/ical/${id}.ics" onclick="this.select()">
+          <button class="admin-btn" onclick="navigator.clipboard.writeText('${location.origin}/ical/${id}.ics').then(()=>showToast('Link copied'))">Copy</button></div>
+        </div>
+        <div style="font-size:12px;color:var(--fg2);margin-top:6px">${status}</div>
+      </div>`;
+  }).join('');
 }
-function unblockDate(){
-  const id=document.getElementById('blApt').value;
-  const d=document.getElementById('blDate').value;
-  manualBlocked[id]=manualBlocked[id].filter(x=>x!==d);
-  try{localStorage.setItem('manualBlocked',JSON.stringify(manualBlocked));}catch(e){}
+async function saveIcalUrls(){
+  const icalUrls={};
+  for(const id of Object.keys(APTS)){
+    const v=document.getElementById('ical-'+id).value.trim();
+    if(v&&!/^https:\/\/[^\s]+$/.test(v)){showToast('Links must start with https://');return;}
+    icalUrls[id]=v;
+  }
+  if(await saveSettings({icalUrls},'✓ Links saved — syncing…')) syncNow();
+}
+async function syncNow(){
+  try{
+    adminState.airbnb=(await api('admin/sync',{method:'POST'})).airbnb;
+  }catch(e){showToast(e.message);return;}
+  renderSyncAdmin();
+  renderBlockedList();
+  await refreshSite();
+  renderAdminCharts();
+  showToast('✓ Airbnb calendars synced');
 }
 
 // --- Subscribers ---
 function renderSubList(){
+  const subscribers=adminState.subscribers;
   const g=document.getElementById('subList');
   if(!subscribers.length){g.innerHTML='<p style="color:var(--fg2);font-size:13px">No subscribers yet.</p>';return;}
-  g.innerHTML=subscribers.map((e,i)=>`<div class="sub-list-item"><span>${e}</span><span style="color:var(--fg2);font-size:12px">#${i+1}</span></div>`).join('');
+  g.innerHTML=subscribers.map((e,i)=>`<div class="sub-list-item"><span>${esc(e)}</span><span style="color:var(--fg2);font-size:12px">#${i+1}</span></div>`).join('');
 }
-function clearSubs(){
+async function clearSubs(){
   if(!confirm('Clear all subscribers?')) return;
-  subscribers=[];
-  try{localStorage.setItem('subscribers',JSON.stringify(subscribers));}catch(e){}
+  try{await api('admin/subscribers',{method:'DELETE'});}catch(e){showToast(e.message);return;}
+  adminState.subscribers=[];
   renderSubList();
 }
 
@@ -1482,10 +1700,14 @@ renderReviews('mel');
 renderNearby('mel');
 renderRules();
 renderFAQ();
-
-// Load saved about text
-const savedAbout=localStorage.getItem('aboutMe');
-if(savedAbout) document.getElementById('aboutText').textContent=savedAbout;
+loadPublic().then(()=>{
+  renderCards();
+  renderRules();
+  renderAbout();
+  initMap();
+  const sharedApt=new URLSearchParams(location.search).get('apt');
+  if(sharedApt&&APTS[sharedApt]) openModal(sharedApt);
+});
 
 // PWA
 if('serviceWorker' in navigator){
