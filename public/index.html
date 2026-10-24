@@ -562,7 +562,7 @@ footer a:hover{color:#fff}
   <div id="adminLogin">
     <p style="font-size:14px;color:var(--fg2)">Enter password to access admin panel.</p>
     <div class="admin-pw-field">
-      <input type="password" id="adminPw" placeholder="Password" onkeydown="if(event.key==='Enter')checkAdmin()">
+      <input type="password" id="adminPw" placeholder="Password" autocapitalize="off" autocorrect="off" autocomplete="current-password" spellcheck="false" onkeydown="if(event.key==='Enter')checkAdmin()">
       <button onclick="checkAdmin()">Login</button>
     </div>
     <div id="adminErr">Incorrect password.</div>
@@ -1343,13 +1343,15 @@ function submitSub(){
 
 // ===== ADMIN =====
 async function checkAdmin(){
-  const pw=document.getElementById('adminPw').value;
+  const pw=document.getElementById('adminPw').value.trim();
   const err=document.getElementById('adminErr');
   err.style.display='none';
   try{
     await api('login',{method:'POST',json:{password:pw}});
   }catch(e){
-    err.textContent=e.message;
+    err.textContent=location.protocol==='file:'||e instanceof TypeError
+      ?'Cannot reach the server. Open the live site: https://tbilisi-stays.ninokherodinashvili.workers.dev'
+      :e.message;
     err.style.display='block';
     return;
   }
