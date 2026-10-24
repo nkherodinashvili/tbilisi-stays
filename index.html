@@ -9,10 +9,10 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#FFFFFF; --bg2:#F8F7F5; --fg:#1A1A1A; --fg2:#555; --border:#E8E4DF;
+  --bg:#FFFFFF; --bg2:#F7F7F7; --fg:#222222; --fg2:#6A6A6A; --border:#DDDDDD;
   --accent:#1B6B4A; --accent2:#145438; --gold:#C8963E;
   --card-shadow:0 2px 12px rgba(0,0,0,.08);
   --radius:12px;
@@ -24,80 +24,83 @@ a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 button{cursor:pointer;border:none;background:none;font-family:inherit}
 
-/* ===== LANG SWITCHER ===== */
-.lang-bar{position:fixed;top:12px;right:16px;z-index:200;display:flex;gap:4px;background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:20px;padding:3px;backdrop-filter:blur(8px)}
-.lang-btn{padding:4px 12px;border-radius:16px;font-size:13px;font-weight:500;color:var(--fg2);transition:all .2s}
-.lang-btn.active{background:var(--accent);color:#fff}
+/* ===== HEADER ===== */
+.site-header{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid var(--border)}
+.header-inner{max-width:1232px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--accent)}
+.header-actions{display:flex;align-items:center;gap:8px}
+.contact-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:22px;font-size:14px;font-weight:600;transition:background .2s}
+.contact-btn:hover{background:var(--bg2)}
+.lang-bar{display:flex;gap:2px;border:1px solid var(--border);border-radius:22px;padding:3px}
+.lang-btn{padding:5px 11px;border-radius:18px;font-size:13px;font-weight:600;color:var(--fg2);transition:all .2s}
+.lang-btn.active{background:var(--fg);color:#fff}
+@media(max-width:639px){
+  .header-inner{padding:12px 16px}
+  .contact-btn span{display:none}
+}
 
-/* ===== HERO ===== */
-.hero{position:relative;height:92vh;min-height:520px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.hero-mosaic{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:3px}
-.hero-tile{overflow:hidden;position:relative}
-.hero-tile img{width:100%;height:100%;object-fit:cover;animation:kenburns 14s ease-in-out infinite alternate}
-.hero-tile:nth-child(2) img{animation-delay:-4s}
-.hero-tile:nth-child(3) img{animation-delay:-8s}
-.hero-tile:nth-child(4) img{animation-delay:-2s}
-.hero-tile:nth-child(5) img{animation-delay:-6s}
-.hero-tile:nth-child(6) img{animation-delay:-10s}
-@keyframes kenburns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-2%,-1%)}}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.25) 0%,rgba(0,0,0,.55) 100%)}
-.hero-content{position:relative;text-align:center;color:#fff;padding:0 20px;max-width:680px}
-.hero-eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:12px}
-.hero-title{font-family:'Instrument Serif',serif;font-size:clamp(36px,6vw,68px);line-height:1.08;margin-bottom:16px;text-wrap:balance}
-.hero-subtitle{font-size:clamp(15px,2vw,18px);opacity:.88;margin-bottom:32px;max-width:480px;margin-left:auto;margin-right:auto}
-.hero-cta{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:14px 28px;border-radius:30px;font-size:16px;font-weight:600;transition:transform .2s,background .2s}
-.hero-cta:hover{background:var(--accent2);transform:translateY(-2px)}
-.hero-badge{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:8px 20px;color:#fff;font-size:13px}
+/* ===== SEARCH BAR ===== */
+.search-wrap{padding:4px 16px 22px}
+.search{display:flex;align-items:center;max-width:760px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:40px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+.s-field{flex:1;position:relative;display:flex;flex-direction:column;gap:2px;min-width:0;padding:12px 24px;border-radius:40px;cursor:pointer;transition:background .2s}
+.s-field:hover{background:var(--bg2)}
+.s-field+.s-field::before{content:'';position:absolute;left:0;top:25%;height:50%;border-left:1px solid var(--border)}
+.s-label{font-size:12px;font-weight:700}
+.s-field select,.s-field input{border:none;background:transparent;padding:0;font-family:inherit;font-size:14px;color:var(--fg2);width:100%;outline:none;cursor:pointer}
+.s-btn{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;margin:7px 8px 7px 4px;background:var(--accent);color:#fff;border-radius:30px;font-size:15px;font-weight:600;flex-shrink:0;transition:background .2s}
+.s-btn:hover{background:var(--accent2)}
+@media(max-width:719px){
+  .search-wrap{padding:0 16px 16px}
+  .search{flex-direction:column;align-items:stretch;border-radius:16px}
+  .s-field{padding:10px 16px;border-radius:12px}
+  .s-field+.s-field::before{left:16px;right:16px;top:0;height:0;border-left:none;border-top:1px solid var(--border)}
+  .s-btn{margin:6px 8px 8px}
+}
 
-/* ===== PLATFORMS ===== */
-.platforms{background:var(--accent);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:13px}
-.plat-chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px}
+/* ===== INTRO ===== */
+.intro-title{font-size:clamp(24px,3.4vw,32px);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:6px;text-wrap:balance}
+.intro-sub{color:var(--fg2);font-size:16px;margin-bottom:16px}
+.trust{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:32px;font-size:14px}
+.trust-item{display:flex;align-items:center;gap:6px}
+.trust-item svg{color:var(--accent);flex-shrink:0}
 
 /* ===== SECTION ===== */
-section{padding:60px 16px}
-.section-title{font-family:'Instrument Serif',serif;font-size:clamp(26px,4vw,38px);margin-bottom:8px;text-wrap:balance}
-.section-sub{color:var(--fg2);margin-bottom:32px;font-size:15px}
-.container{max-width:1100px;margin:0 auto}
+section{padding:56px 16px}
+section+section{border-top:1px solid var(--border)}
+.section-title{font-size:clamp(22px,3vw,28px);font-weight:700;letter-spacing:-.01em;margin-bottom:6px;text-wrap:balance}
+.section-sub{color:var(--fg2);margin-bottom:28px;font-size:15px}
+.container{max-width:1200px;margin:0 auto}
+#apartments{padding-top:32px}
 
 /* ===== APARTMENT CARDS ===== */
-.apt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
-.apt-card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--card-shadow);transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}
-.apt-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.apt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:40px 24px}
+.apt-card{cursor:pointer}
 
 /* Card photo */
-.c-photo{position:relative;height:220px;overflow:hidden;background:#E8F4EE}
+.c-photo{position:relative;aspect-ratio:20/19;overflow:hidden;border-radius:var(--radius);background:var(--bg2)}
 .c-photo-inner{display:flex;height:100%;transition:transform .35s ease}
 .c-photo-slide{flex:0 0 100%;height:100%}
 .c-photo-slide img{width:100%;height:100%;object-fit:cover}
-.c-photo-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px;opacity:0;transition:opacity .2s}
-.c-photo:hover .c-photo-nav{opacity:1}
-.pnav-btn{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.9);font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1}
-.c-photo-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
-.pdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);transition:background .2s}
+.c-photo-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 10px;opacity:0;transition:opacity .2s;pointer-events:none}
+.apt-card:hover .c-photo-nav{opacity:1}
+.pnav-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 1px 4px rgba(0,0,0,.18);font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;pointer-events:auto;transition:transform .2s}
+.pnav-btn:hover{transform:scale(1.06)}
+.c-photo-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px}
+.pdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);transition:background .2s}
 .pdot.active{background:#fff}
-.c-badges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:5px}
-.badge-superhost{background:rgba(255,255,255,.92);border-radius:20px;padding:3px 9px;font-size:12px;font-weight:500}
-.badge-booked{background:rgba(0,0,0,.55);color:#fff;border-radius:20px;padding:3px 9px;font-size:11px}
-.c-price-badge{position:absolute;bottom:10px;right:10px;background:var(--accent);color:#fff;border-radius:20px;padding:5px 12px;font-size:14px;font-weight:600}
-.pnight{font-size:11px;font-weight:400;opacity:.85}
+.c-badges{position:absolute;top:12px;left:12px}
+.badge-superhost{background:#fff;border-radius:20px;padding:5px 11px;font-size:13px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 
 /* Card body */
-.c-body{padding:14px 16px 10px}
-.c-name{font-family:'Instrument Serif',serif;font-size:20px;font-weight:400;margin-bottom:4px}
-.c-loc{font-size:13px;color:var(--fg2);display:flex;align-items:center;gap:4px;margin-bottom:8px}
-.c-rating{display:flex;align-items:center;gap:5px;margin-bottom:8px}
-.stars{color:#FFB400;font-size:13px;letter-spacing:1px}
-.c-rating-num{font-weight:600;font-size:14px}
-.c-rating-cnt{color:var(--fg2);font-size:13px}
-.c-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
-.chip{background:var(--bg2);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--fg2)}
-.c-foot{padding:0 16px 14px;display:flex;gap:8px;align-items:center}
-.btn-book{flex:1;background:var(--accent);color:#fff;border-radius:22px;padding:10px 16px;font-size:14px;font-weight:600;transition:background .2s}
-.btn-book:hover{background:var(--accent2)}
-.btn-wa{width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
-.btn-wa:hover{background:var(--accent)}
-.btn-wa:hover svg path{fill:#fff}
-.urgency-strip{background:#FFF3CD;border-top:1px solid #FFE08A;padding:5px 16px;font-size:12px;color:#856404;text-align:center}
+.c-body{padding-top:12px;font-size:15px;line-height:1.4}
+.c-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.c-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-rating{display:flex;align-items:center;gap:4px;flex-shrink:0;font-size:14px}
+.c-rating-cnt{color:var(--fg2)}
+.c-meta{color:var(--fg2)}
+.c-urgency{color:#B4441F;font-size:14px;margin-top:2px}
+.c-price{margin-top:6px}
+.c-price strong{font-weight:600}
 
 /* ===== MODAL ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -107,7 +110,7 @@ section{padding:60px 16px}
 @media(min-width:640px){.modal{border-radius:20px;transform:translateY(0)}}
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal-head{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2;border-bottom:1px solid var(--border);padding-bottom:14px}
-.modal-title{font-family:'Instrument Serif',serif;font-size:20px}
+.modal-title{font-size:18px;font-weight:600}
 .modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1}
 
 /* Modal gallery — horizontal scroll strip */
@@ -149,7 +152,6 @@ section{padding:60px 16px}
 #lbCounter{position:absolute;bottom:14px;color:rgba(255,255,255,.7);font-size:13px}
 
 /* ===== MAP ===== */
-.map-section{background:var(--bg2)}
 .map-frame{width:100%;height:400px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
 .map-frame iframe{width:100%;height:100%;border:0}
 
@@ -174,16 +176,14 @@ section{padding:60px 16px}
 .nearby-dist{font-size:12px;color:var(--fg2)}
 
 /* ===== ABOUT ===== */
-.about-section{background:var(--accent);color:#fff}
 .about-inner{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
 @media(max-width:640px){.about-inner{grid-template-columns:1fr}}
 .about-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius)}
-.about-title{font-family:'Instrument Serif',serif;font-size:clamp(24px,3.5vw,36px);margin-bottom:16px;text-wrap:balance}
-.about-text{opacity:.9;line-height:1.7;font-size:15px}
-.about-stats{display:flex;gap:24px;margin-top:24px;flex-wrap:wrap}
-.astat{text-align:center}
-.astat-num{font-family:'Instrument Serif',serif;font-size:32px;display:block}
-.astat-label{font-size:12px;opacity:.75}
+.about-title{font-size:clamp(22px,3vw,28px);font-weight:700;letter-spacing:-.01em;margin-bottom:16px;text-wrap:balance}
+.about-text{color:var(--fg2);line-height:1.7;font-size:15px}
+.about-stats{display:flex;gap:32px;margin-top:24px;flex-wrap:wrap}
+.astat-num{font-size:24px;font-weight:700;display:block}
+.astat-label{font-size:13px;color:var(--fg2)}
 
 /* ===== HOUSE RULES ===== */
 .rules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
@@ -213,7 +213,7 @@ section{padding:60px 16px}
 .btn-submit:hover{background:var(--accent2)}
 .success-msg{background:#D4EDDA;color:#155724;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:10px;display:none}
 .sub-box{background:var(--accent);border-radius:var(--radius);padding:28px;color:#fff;display:flex;flex-direction:column;justify-content:center}
-.sub-title{font-family:'Instrument Serif',serif;font-size:22px;margin-bottom:8px}
+.sub-title{font-size:20px;font-weight:700;margin-bottom:8px}
 .sub-desc{opacity:.85;font-size:14px;margin-bottom:20px}
 .sub-input-row{display:flex;gap:8px}
 .sub-input-row input{flex:1;border:none;border-radius:22px;padding:11px 16px;font-size:14px;font-family:inherit}
@@ -290,45 +290,62 @@ footer a:hover{color:#fff}
 </head>
 <body>
 
-<!-- Language switcher -->
-<div class="lang-bar">
-  <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
-  <button class="lang-btn" id="btnKA" onclick="setLang('ka')">KA</button>
-</div>
-
-<!-- HERO -->
-<div class="hero" id="heroSection">
-  <div class="hero-mosaic" id="heroMosaic">
-    <div class="hero-tile"><img src="" alt="Tbilisi apartment" id="heroImg1"></div>
-    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg2"></div>
-    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg3"></div>
-    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg4"></div>
-    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg5"></div>
-    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg6"></div>
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+      tbilisi stays
+    </a>
+    <div class="header-actions">
+      <a class="contact-btn" href="https://wa.me/995599161004" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.9-.9L3 20l1.1-4.6A8.4 8.4 0 1 1 21 11.5z"/></svg>
+        <span data-i18n="nav_contact">Message host</span>
+      </a>
+      <div class="lang-bar">
+        <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" id="btnKA" onclick="setLang('ka')">KA</button>
+      </div>
+    </div>
   </div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow" data-i18n="hero_eyebrow">Tbilisi · Georgia</div>
-    <h1 class="hero-title" data-i18n="hero_title">Your home in the heart of Tbilisi</h1>
-    <p class="hero-subtitle" data-i18n="hero_subtitle">Book directly — no Airbnb fees. Save up to $25 per stay.</p>
-    <a href="#apartments" class="hero-cta" data-i18n="hero_cta">View Apartments</a>
+  <div class="search-wrap">
+    <div class="search">
+      <label class="s-field">
+        <span class="s-label" data-i18n="search_where">Where</span>
+        <select id="sApt">
+          <option value="" data-i18n="search_any">Any apartment</option>
+          <option value="mel">მელიქიშვილი — Vera</option>
+          <option value="nik">ნიკოლაძე — Vera Center</option>
+          <option value="bar">ბარათაშვილი — Old Town</option>
+        </select>
+      </label>
+      <label class="s-field">
+        <span class="s-label" data-i18n="search_in">Check in</span>
+        <input type="date" id="sIn" onchange="document.getElementById('sOut').min=this.value">
+      </label>
+      <label class="s-field">
+        <span class="s-label" data-i18n="search_out">Check out</span>
+        <input type="date" id="sOut">
+      </label>
+      <button class="s-btn" onclick="runSearch()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span data-i18n="search_btn">Search</span>
+      </button>
+    </div>
   </div>
-  <div class="hero-badge" data-i18n="hero_badge">3 apartments · Vera & Old Town</div>
-</div>
-
-<!-- PLATFORMS BANNER -->
-<div class="platforms">
-  <div class="plat-chip">✓ <span data-i18n="plat_direct">Book directly</span></div>
-  <div class="plat-chip">💰 <span data-i18n="plat_save">No 14% Airbnb fee</span></div>
-  <div class="plat-chip">💬 <span data-i18n="plat_wa">Instant WhatsApp reply</span></div>
-  <div class="plat-chip">🏅 <span data-i18n="plat_host">Superhost 4.9★</span></div>
-</div>
+</header>
 
 <!-- APARTMENTS -->
-<section id="apartments" style="background:var(--bg2)">
+<section id="apartments">
   <div class="container">
-    <h2 class="section-title" data-i18n="apts_title">Choose your apartment</h2>
-    <p class="section-sub" data-i18n="apts_sub">All apartments are personally managed and regularly inspected.</p>
+    <h1 class="intro-title" data-i18n="intro_title">Stays in Tbilisi, booked direct with the host</h1>
+    <p class="intro-sub" data-i18n="intro_sub">3 apartments in Vera & Old Town. No Airbnb service fee — save up to $25 per stay.</p>
+    <div class="trust">
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plat_direct">Book directly</span></div>
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plat_save">No 14% Airbnb fee</span></div>
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plat_wa">Instant WhatsApp reply</span></div>
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="plat_host">Superhost 4.9★</span></div>
+    </div>
     <div class="apt-grid" id="aptGrid"></div>
   </div>
 </section>
@@ -362,7 +379,7 @@ footer a:hover{color:#fff}
 </section>
 
 <!-- NEARBY -->
-<section style="background:var(--bg2)">
+<section>
   <div class="container">
     <h2 class="section-title" data-i18n="nearby_title">What's nearby</h2>
     <p class="section-sub" data-i18n="nearby_sub">Everything you need is steps away.</p>
@@ -390,7 +407,7 @@ footer a:hover{color:#fff}
       </div>
       <div>
         <!-- placeholder host photo slot -->
-        <div style="width:100%;aspect-ratio:4/3;background:rgba(255,255,255,.15);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:80px">🏡</div>
+        <div style="width:100%;aspect-ratio:4/3;background:var(--bg2);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:80px">🏡</div>
       </div>
     </div>
   </div>
@@ -406,7 +423,7 @@ footer a:hover{color:#fff}
 </section>
 
 <!-- FAQ -->
-<section style="background:var(--bg2)">
+<section>
   <div class="container">
     <h2 class="section-title" data-i18n="faq_title">Frequently asked questions</h2>
     <div class="faq-list" id="faqList"></div>
@@ -669,17 +686,14 @@ footer a:hover{color:#fff}
 // ===== I18N =====
 const T = {
   en: {
-    hero_eyebrow:'Tbilisi · Georgia',
-    hero_title:'Your home in the heart of Tbilisi',
-    hero_subtitle:'Book directly — no Airbnb fees. Save up to $25 per stay.',
-    hero_cta:'View Apartments',
-    hero_badge:'3 apartments · Vera & Old Town',
+    nav_contact:'Message host',
+    search_where:'Where',search_any:'Any apartment',search_in:'Check in',search_out:'Check out',search_btn:'Search',
+    intro_title:'Stays in Tbilisi, booked direct with the host',
+    intro_sub:'3 apartments in Vera & Old Town. No Airbnb service fee — save up to $25 per stay.',
     plat_direct:'Book directly',
     plat_save:'No 14% Airbnb fee',
     plat_wa:'Instant WhatsApp reply',
     plat_host:'Superhost 4.9★',
-    apts_title:'Choose your apartment',
-    apts_sub:'All apartments are personally managed and regularly inspected.',
     map_title:'All locations on map',
     map_sub:'All three apartments are in the best neighborhoods of Tbilisi.',
     reviews_title:'Guest reviews',
@@ -702,7 +716,7 @@ const T = {
     mobile_book:'Book Now — Save on Fees',
     cal_title:'Check availability & price',cal_in:'Check-in',cal_out:'Check-out',
     modal_book_btn:'Send booking request via WhatsApp',
-    btn_book:'Select dates',
+    night:'night',dates_left:'Only {n} dates left this month',
     nights:'nights',cleaning:'Cleaning fee',total:'Total',
     blocked_msg:'⚠️ One or more dates in this period are unavailable. Please try different dates.',
     date_order_msg:'Check-out must be after check-in.',
@@ -712,17 +726,14 @@ const T = {
     reviews_label:'reviews',
   },
   ka: {
-    hero_eyebrow:'თბილისი · საქართველო',
-    hero_title:'თქვენი სახლი თბილისის გულში',
-    hero_subtitle:'დაჯავშნეთ პირდაპირ — Airbnb-ის გადასახადის გარეშე. დაზოგეთ $25-მდე.',
-    hero_cta:'ბინების ნახვა',
-    hero_badge:'3 ბინა · Vera & ძველი თბილისი',
+    nav_contact:'მისწერეთ მასპინძელს',
+    search_where:'სად',search_any:'ნებისმიერი ბინა',search_in:'შემოსვლა',search_out:'გასვლა',search_btn:'ძებნა',
+    intro_title:'ბინები თბილისში — დაჯავშნეთ პირდაპირ მასპინძელთან',
+    intro_sub:'3 ბინა ვერასა და ძველ თბილისში. Airbnb-ის სერვისის საფასურის გარეშე — დაზოგეთ $25-მდე.',
     plat_direct:'პირდაპირი ჯავშანი',
     plat_save:'Airbnb-ის 14% გადასახადი არ ერიცხება',
     plat_wa:'სწრაფი პასუხი WhatsApp-ზე',
     plat_host:'Superhost 4.9★',
-    apts_title:'აირჩიეთ ბინა',
-    apts_sub:'ყველა ბინა პირადად მართულია და რეგულარულად შემოწმებული.',
     map_title:'ყველა ლოკაცია რუკაზე',
     map_sub:'სამივე ბინა თბილისის საუკეთესო უბნებში მდებარეობს.',
     reviews_title:'სტუმრების შეფასებები',
@@ -745,7 +756,7 @@ const T = {
     mobile_book:'დაჯავშნეთ — დაზოგეთ',
     cal_title:'შეამოწმეთ ხელმისაწვდომობა',cal_in:'შემოსვლა',cal_out:'გასვლა',
     modal_book_btn:'WhatsApp-ით ჯავშნა',
-    btn_book:'თარიღების არჩევა',
+    night:'ღამე',dates_left:'ამ თვეში მხოლოდ {n} თავისუფალი თარიღია',
     nights:'ღამე',cleaning:'დასუფთავება',total:'სულ',
     blocked_msg:'⚠️ ამ პერიოდში ერთი ან მეტი თარიღი დაკავებულია.',
     date_order_msg:'გამოსვლის თარიღი შემოსვლის შემდეგ უნდა იყოს.',
@@ -965,15 +976,13 @@ function loadAllDescs(){
 }
 loadAllDescs();
 
-// ===== HERO PHOTOS =====
-function initHero(){
-  const allPhotos=[];
-  Object.values(APTS).forEach(a=>allPhotos.push(...a.photos));
-  const shuffled=allPhotos.sort(()=>Math.random()-.5).slice(0,6);
-  for(let i=1;i<=6;i++){
-    const img=document.getElementById('heroImg'+i);
-    if(img&&shuffled[i-1]) img.src=shuffled[i-1];
-  }
+// ===== SEARCH =====
+let searchDates={in:'',out:''};
+function runSearch(){
+  const id=document.getElementById('sApt').value;
+  searchDates={in:document.getElementById('sIn').value,out:document.getElementById('sOut').value};
+  if(id) openModal(id);
+  else document.getElementById('apartments').scrollIntoView({behavior:'smooth'});
 }
 
 // ===== RENDER CARDS =====
@@ -984,9 +993,10 @@ function renderCards(){
     const price=priceOverrides[id]||a.price;
     const card=document.createElement('div');
     card.className='apt-card';
+    card.onclick=()=>openModal(id);
     const photosHtml=a.photos.length
-      ?a.photos.map((p,i)=>`<div class="c-photo-slide" onclick="openLightbox('${id}',${i})"><img src="${p}" alt="${a.name}" loading="${i===0?'eager':'lazy'}"></div>`).join('')
-      :`<div class="c-photo-slide"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#E8F4EE;color:#1B6B4A;font-size:40px">🏠</div></div>`;
+      ?a.photos.map((p,i)=>`<div class="c-photo-slide"><img src="${p}" alt="${a.name}" loading="${i===0?'eager':'lazy'}" onerror="this.style.visibility='hidden'"></div>`).join('')
+      :`<div class="c-photo-slide"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:40px">🏠</div></div>`;
     card.innerHTML=`
       <div class="c-photo" id="photo-${id}">
         <div class="c-photo-inner" id="inner-${id}">${photosHtml}</div>
@@ -998,23 +1008,18 @@ function renderCards(){
           ${a.photos.map((_,i)=>`<div class="pdot${i===0?' active':''}" id="dot-${id}-${i}"></div>`).join('')}
         </div>
         <div class="c-badges">
-          <div class="badge-superhost">🏅 Superhost</div>
-          <div class="badge-booked">⏱ ${t('last_booked')} ${a.lastBooked}</div>
+          <div class="badge-superhost">Superhost</div>
         </div>
-        <div class="c-price-badge">$${price}<span class="pnight">/night</span></div>
       </div>
-      ${a.freeThisMonth<=10?`<div class="urgency-strip">🔥 Only ${a.freeThisMonth} dates free this month</div>`:''}
       <div class="c-body">
-        <div class="c-name">${a.name}</div>
-        <div class="c-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${a.loc}</div>
-        <div class="c-rating"><div class="stars">${'★'.repeat(5)}</div><div class="c-rating-num">${a.rating}</div><div class="c-rating-cnt">(${a.reviews} ${t('reviews_label')})</div></div>
-        <div class="c-chips">${a.chips.map(c=>`<div class="chip">${c}</div>`).join('')}</div>
-      </div>
-      <div class="c-foot">
-        <button class="btn-book" onclick="openModal('${id}')">${t('btn_book')}</button>
-        <a class="btn-wa" href="https://wa.me/995599161004?text=${encodeURIComponent('Hello Nino! Interested in '+a.name+'.')}" target="_blank">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        </a>
+        <div class="c-head">
+          <div class="c-name">${a.name} · ${a.loc}</div>
+          <div class="c-rating">★ ${a.rating} <span class="c-rating-cnt">(${a.reviews})</span></div>
+        </div>
+        <div class="c-meta">${a.chips.join(' · ')}</div>
+        <div class="c-meta">${t('last_booked')} ${a.lastBooked}</div>
+        ${a.freeThisMonth<=10?`<div class="c-urgency">${t('dates_left').replace('{n}',a.freeThisMonth)}</div>`:''}
+        <div class="c-price"><strong>$${price}</strong> ${t('night')}</div>
       </div>
     `;
     const photoEl=card.querySelector('#photo-'+id);
@@ -1052,9 +1057,10 @@ function openModal(id){
   }
   const desc=customDescs[id]||a.desc[lang]||a.desc.en;
   document.getElementById('modalDesc').textContent=desc;
-  document.getElementById('modalIn').value='';
-  document.getElementById('modalOut').value='';
+  document.getElementById('modalIn').value=searchDates.in;
+  document.getElementById('modalOut').value=searchDates.out;
   document.getElementById('priceResult').innerHTML='';
+  calcModal();
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -1288,7 +1294,6 @@ function handlePhotoUpload(event){
         APTS[id].photos=existing;
         renderPhotoGrid();
         renderCards();
-        initHero();
       }
     };
     reader.readAsDataURL(file);
@@ -1473,7 +1478,6 @@ function clearSubs(){
 
 // ===== INIT =====
 renderCards();
-initHero();
 renderReviews('mel');
 renderNearby('mel');
 renderRules();
