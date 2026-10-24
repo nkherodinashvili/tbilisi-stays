@@ -1,11 +1,1492 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello World</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tbilisi Stays — Direct Booking</title>
+<meta name="description" content="Book Tbilisi apartments directly from the host. No Airbnb fees.">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#FFFFFF; --bg2:#F8F7F5; --fg:#1A1A1A; --fg2:#555; --border:#E8E4DF;
+  --accent:#1B6B4A; --accent2:#145438; --gold:#C8963E;
+  --card-shadow:0 2px 12px rgba(0,0,0,.08);
+  --radius:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);line-height:1.5;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+
+/* ===== LANG SWITCHER ===== */
+.lang-bar{position:fixed;top:12px;right:16px;z-index:200;display:flex;gap:4px;background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:20px;padding:3px;backdrop-filter:blur(8px)}
+.lang-btn{padding:4px 12px;border-radius:16px;font-size:13px;font-weight:500;color:var(--fg2);transition:all .2s}
+.lang-btn.active{background:var(--accent);color:#fff}
+
+/* ===== HERO ===== */
+.hero{position:relative;height:92vh;min-height:520px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hero-mosaic{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:3px}
+.hero-tile{overflow:hidden;position:relative}
+.hero-tile img{width:100%;height:100%;object-fit:cover;animation:kenburns 14s ease-in-out infinite alternate}
+.hero-tile:nth-child(2) img{animation-delay:-4s}
+.hero-tile:nth-child(3) img{animation-delay:-8s}
+.hero-tile:nth-child(4) img{animation-delay:-2s}
+.hero-tile:nth-child(5) img{animation-delay:-6s}
+.hero-tile:nth-child(6) img{animation-delay:-10s}
+@keyframes kenburns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-2%,-1%)}}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.25) 0%,rgba(0,0,0,.55) 100%)}
+.hero-content{position:relative;text-align:center;color:#fff;padding:0 20px;max-width:680px}
+.hero-eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:12px}
+.hero-title{font-family:'Instrument Serif',serif;font-size:clamp(36px,6vw,68px);line-height:1.08;margin-bottom:16px;text-wrap:balance}
+.hero-subtitle{font-size:clamp(15px,2vw,18px);opacity:.88;margin-bottom:32px;max-width:480px;margin-left:auto;margin-right:auto}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:14px 28px;border-radius:30px;font-size:16px;font-weight:600;transition:transform .2s,background .2s}
+.hero-cta:hover{background:var(--accent2);transform:translateY(-2px)}
+.hero-badge{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:8px 20px;color:#fff;font-size:13px}
+
+/* ===== PLATFORMS ===== */
+.platforms{background:var(--accent);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:13px}
+.plat-chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px}
+
+/* ===== SECTION ===== */
+section{padding:60px 16px}
+.section-title{font-family:'Instrument Serif',serif;font-size:clamp(26px,4vw,38px);margin-bottom:8px;text-wrap:balance}
+.section-sub{color:var(--fg2);margin-bottom:32px;font-size:15px}
+.container{max-width:1100px;margin:0 auto}
+
+/* ===== APARTMENT CARDS ===== */
+.apt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
+.apt-card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--card-shadow);transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}
+.apt-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.12)}
+
+/* Card photo */
+.c-photo{position:relative;height:220px;overflow:hidden;background:#E8F4EE}
+.c-photo-inner{display:flex;height:100%;transition:transform .35s ease}
+.c-photo-slide{flex:0 0 100%;height:100%}
+.c-photo-slide img{width:100%;height:100%;object-fit:cover}
+.c-photo-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px;opacity:0;transition:opacity .2s}
+.c-photo:hover .c-photo-nav{opacity:1}
+.pnav-btn{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.9);font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1}
+.c-photo-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.pdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);transition:background .2s}
+.pdot.active{background:#fff}
+.c-badges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:5px}
+.badge-superhost{background:rgba(255,255,255,.92);border-radius:20px;padding:3px 9px;font-size:12px;font-weight:500}
+.badge-booked{background:rgba(0,0,0,.55);color:#fff;border-radius:20px;padding:3px 9px;font-size:11px}
+.c-price-badge{position:absolute;bottom:10px;right:10px;background:var(--accent);color:#fff;border-radius:20px;padding:5px 12px;font-size:14px;font-weight:600}
+.pnight{font-size:11px;font-weight:400;opacity:.85}
+
+/* Card body */
+.c-body{padding:14px 16px 10px}
+.c-name{font-family:'Instrument Serif',serif;font-size:20px;font-weight:400;margin-bottom:4px}
+.c-loc{font-size:13px;color:var(--fg2);display:flex;align-items:center;gap:4px;margin-bottom:8px}
+.c-rating{display:flex;align-items:center;gap:5px;margin-bottom:8px}
+.stars{color:#FFB400;font-size:13px;letter-spacing:1px}
+.c-rating-num{font-weight:600;font-size:14px}
+.c-rating-cnt{color:var(--fg2);font-size:13px}
+.c-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.chip{background:var(--bg2);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--fg2)}
+.c-foot{padding:0 16px 14px;display:flex;gap:8px;align-items:center}
+.btn-book{flex:1;background:var(--accent);color:#fff;border-radius:22px;padding:10px 16px;font-size:14px;font-weight:600;transition:background .2s}
+.btn-book:hover{background:var(--accent2)}
+.btn-wa{width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.btn-wa:hover{background:var(--accent)}
+.btn-wa:hover svg path{fill:#fff}
+.urgency-strip{background:#FFF3CD;border-top:1px solid #FFE08A;padding:5px 16px;font-size:12px;color:#856404;text-align:center}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+@media(min-width:640px){.modal-overlay{align-items:center}}
+.modal{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;transform:translateY(30px);transition:transform .25s}
+@media(min-width:640px){.modal{border-radius:20px;transform:translateY(0)}}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2;border-bottom:1px solid var(--border);padding-bottom:14px}
+.modal-title{font-family:'Instrument Serif',serif;font-size:20px}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1}
+
+/* Modal gallery — horizontal scroll strip */
+.modal-gallery{display:flex;gap:8px;overflow-x:auto;padding:16px 20px;scrollbar-width:none}
+.modal-gallery::-webkit-scrollbar{display:none}
+.modal-gallery img{height:140px;width:auto;min-width:180px;max-width:260px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer}
+
+.modal-body{padding:0 20px 20px}
+.modal-desc{color:var(--fg2);font-size:14px;line-height:1.6;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:16px}
+
+/* Calendar section */
+.modal-cal-section{background:var(--bg2);border-radius:12px;padding:16px;margin-bottom:16px}
+.cal-title{font-size:13px;font-weight:600;color:var(--fg2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.date-field label{display:block;font-size:12px;color:var(--fg2);margin-bottom:4px}
+.date-field input{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 10px;font-size:14px;font-family:inherit;background:#fff}
+.btn-calc{width:100%;background:var(--accent);color:#fff;border-radius:8px;padding:11px;font-size:14px;font-weight:600;transition:background .2s}
+.btn-calc:hover{background:var(--accent2)}
+
+.price-breakdown{background:#fff;border-radius:8px;border:1px solid var(--border);overflow:hidden;margin-top:12px}
+.pb-row{display:flex;justify-content:space-between;padding:9px 14px;font-size:14px;border-bottom:1px solid var(--border)}
+.pb-row:last-child{border-bottom:none;background:var(--bg2)}
+.price-msg{font-size:13px;color:var(--fg2);text-align:center;padding:8px 0}
+.save-highlight{color:var(--accent);font-weight:600}
+
+.modal-book-btn{width:100%;background:var(--accent);color:#fff;border-radius:12px;padding:14px;font-size:16px;font-weight:600;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s}
+.modal-book-btn:hover{background:var(--accent2)}
+
+/* ===== LIGHTBOX ===== */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center}
+#lightbox.open{display:flex}
+#lightbox img{max-width:94vw;max-height:84vh;object-fit:contain;border-radius:4px}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;transition:background .2s}
+.lb-nav:hover{background:rgba(255,255,255,.3)}
+.lb-prev{left:12px}
+.lb-next{right:12px}
+.lb-close{position:absolute;top:14px;right:14px;color:#fff;font-size:28px;opacity:.7}
+.lb-close:hover{opacity:1}
+#lbCounter{position:absolute;bottom:14px;color:rgba(255,255,255,.7);font-size:13px}
+
+/* ===== MAP ===== */
+.map-section{background:var(--bg2)}
+.map-frame{width:100%;height:400px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.map-frame iframe{width:100%;height:100%;border:0}
+
+/* ===== REVIEWS ===== */
+.reviews-tabs,.nearby-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.rtab{padding:7px 16px;border-radius:20px;border:1px solid var(--border);font-size:13px;font-weight:500;color:var(--fg2);transition:all .2s}
+.rtab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.review-card{background:#fff;border-radius:10px;padding:16px;border:1px solid var(--border)}
+.rv-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rv-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex-shrink:0}
+.rv-name{font-weight:600;font-size:14px}
+.rv-date{color:var(--fg2);font-size:12px}
+.rv-stars{color:#FFB400;font-size:12px;margin-bottom:5px}
+.rv-text{font-size:13px;color:var(--fg2);line-height:1.5}
+
+/* ===== NEARBY ===== */
+.nearby-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.nearby-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.nearby-icon{font-size:22px;margin-bottom:5px}
+.nearby-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.nearby-dist{font-size:12px;color:var(--fg2)}
+
+/* ===== ABOUT ===== */
+.about-section{background:var(--accent);color:#fff}
+.about-inner{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+@media(max-width:640px){.about-inner{grid-template-columns:1fr}}
+.about-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius)}
+.about-title{font-family:'Instrument Serif',serif;font-size:clamp(24px,3.5vw,36px);margin-bottom:16px;text-wrap:balance}
+.about-text{opacity:.9;line-height:1.7;font-size:15px}
+.about-stats{display:flex;gap:24px;margin-top:24px;flex-wrap:wrap}
+.astat{text-align:center}
+.astat-num{font-family:'Instrument Serif',serif;font-size:32px;display:block}
+.astat-label{font-size:12px;opacity:.75}
+
+/* ===== HOUSE RULES ===== */
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.rule-item{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px}
+.rule-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.rule-text{font-size:14px;line-height:1.4}
+
+/* ===== FAQ ===== */
+.faq-list{max-width:700px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{width:100%;text-align:left;padding:16px 0;font-size:15px;font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-icon{font-size:20px;color:var(--accent);flex-shrink:0;transition:transform .2s;line-height:1}
+.faq-q.open .faq-icon{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;font-size:14px;color:var(--fg2);line-height:1.7;transition:max-height .3s ease,padding .3s}
+.faq-a.open{max-height:300px;padding-bottom:16px}
+
+/* ===== CONTACT ===== */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:640px){.contact-grid{grid-template-columns:1fr}}
+.contact-form{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:24px}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:13px;color:var(--fg2);margin-bottom:5px;font-weight:500}
+.form-row input,.form-row select,.form-row textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;background:#fff;transition:border .2s}
+.form-row textarea{resize:vertical;min-height:90px}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:var(--accent)}
+.btn-submit{width:100%;background:var(--accent);color:#fff;border-radius:22px;padding:12px;font-size:15px;font-weight:600;margin-top:6px;transition:background .2s}
+.btn-submit:hover{background:var(--accent2)}
+.success-msg{background:#D4EDDA;color:#155724;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:10px;display:none}
+.sub-box{background:var(--accent);border-radius:var(--radius);padding:28px;color:#fff;display:flex;flex-direction:column;justify-content:center}
+.sub-title{font-family:'Instrument Serif',serif;font-size:22px;margin-bottom:8px}
+.sub-desc{opacity:.85;font-size:14px;margin-bottom:20px}
+.sub-input-row{display:flex;gap:8px}
+.sub-input-row input{flex:1;border:none;border-radius:22px;padding:11px 16px;font-size:14px;font-family:inherit}
+.sub-btn{background:#fff;color:var(--accent);border-radius:22px;padding:11px 18px;font-size:14px;font-weight:600;flex-shrink:0}
+
+/* ===== FOOTER ===== */
+footer{background:var(--fg);color:rgba(255,255,255,.7);text-align:center;padding:28px 16px;font-size:13px}
+footer a{color:rgba(255,255,255,.5);transition:color .2s}
+footer a:hover{color:#fff}
+
+/* ===== ADMIN PANEL ===== */
+.admin-trigger{position:fixed;bottom:80px;right:16px;background:var(--fg);color:#fff;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;display:none}
+.admin-overlay.open{display:block}
+.admin-panel{position:fixed;right:0;top:0;bottom:0;width:min(480px,100vw);background:#fff;z-index:700;overflow-y:auto;transform:translateX(100%);transition:transform .3s}
+.admin-panel.open{transform:translateX(0)}
+.admin-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.admin-head h2{font-size:18px;font-weight:600}
+.admin-close{font-size:22px;opacity:.5;padding:4px}
+.admin-close:hover{opacity:1}
+#adminLogin{padding:24px}
+.admin-pw-field{display:flex;gap:8px;margin-top:12px}
+.admin-pw-field input{flex:1;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px}
+.admin-pw-field button{background:var(--accent);color:#fff;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600}
+#adminErr{color:#dc3545;font-size:13px;margin-top:8px;display:none}
+#adminContent{display:none;padding:0 0 40px}
+#adminContent.show{display:block}
+.admin-section{padding:16px 20px;border-bottom:1px solid var(--border)}
+.admin-section h3{font-size:14px;font-weight:600;color:var(--fg2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.admin-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px}
+.admin-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:100px}
+.admin-field label{font-size:12px;color:var(--fg2)}
+.admin-field input,.admin-field select,.admin-field textarea{border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;width:100%;background:#fff}
+.admin-field textarea{resize:vertical;min-height:80px}
+.admin-btn{background:var(--accent);color:#fff;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.admin-btn.danger{background:#dc3545}
+.stat-box{background:var(--bg2);border-radius:8px;padding:12px;text-align:center;flex:1;min-width:80px}
+.stat-val{font-size:22px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--fg2);margin-top:2px}
+.stats-row{display:flex;gap:8px;flex-wrap:wrap}
+.chart-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.chart-bar-label{font-size:12px;width:60px;flex-shrink:0}
+.chart-bar-outer{flex:1;height:18px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.chart-bar-inner{height:100%;background:var(--accent);border-radius:4px;transition:width .5s}
+.chart-bar-val{font-size:12px;width:44px;text-align:right;color:var(--fg2)}
+.booking-table{width:100%;border-collapse:collapse;font-size:13px}
+.booking-table th{background:var(--bg2);padding:7px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)}
+.booking-table td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.photo-upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.photo-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent}
+.photo-thumb.selected{border-color:var(--accent)}
+.photo-add{width:100%;aspect-ratio:1;border:2px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--fg2);cursor:pointer}
+.photo-add:hover{border-color:var(--accent);color:var(--accent)}
+.sub-list{font-size:13px}
+.sub-list-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}
+
+/* ===== SYNC STATUS ===== */
+.sync-status{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--fg2)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#aaa;flex-shrink:0;transition:background .3s}
+.sync-dot.ok{background:#22c55e}
+
+/* ===== MOBILE BOOK BTN ===== */
+.mobile-book{display:none;position:fixed;bottom:0;left:0;right:0;padding:10px 16px;background:#fff;border-top:1px solid var(--border);z-index:100;box-shadow:0 -2px 10px rgba(0,0,0,.08)}
+@media(max-width:639px){.mobile-book{display:block}}
+.mobile-book-btn{width:100%;background:var(--accent);color:#fff;border-radius:22px;padding:13px;font-size:16px;font-weight:600}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:639px){
+  section{padding:40px 16px}
+  .apt-grid{grid-template-columns:1fr}
+  body{padding-bottom:70px}
+}
+</style>
 </head>
 <body>
-  <h1>Hello, World!</h1>
+
+<!-- Language switcher -->
+<div class="lang-bar">
+  <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" id="btnKA" onclick="setLang('ka')">KA</button>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="heroSection">
+  <div class="hero-mosaic" id="heroMosaic">
+    <div class="hero-tile"><img src="" alt="Tbilisi apartment" id="heroImg1"></div>
+    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg2"></div>
+    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg3"></div>
+    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg4"></div>
+    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg5"></div>
+    <div class="hero-tile"><img src="" alt="Tbilisi" id="heroImg6"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow" data-i18n="hero_eyebrow">Tbilisi · Georgia</div>
+    <h1 class="hero-title" data-i18n="hero_title">Your home in the heart of Tbilisi</h1>
+    <p class="hero-subtitle" data-i18n="hero_subtitle">Book directly — no Airbnb fees. Save up to $25 per stay.</p>
+    <a href="#apartments" class="hero-cta" data-i18n="hero_cta">View Apartments</a>
+  </div>
+  <div class="hero-badge" data-i18n="hero_badge">3 apartments · Vera & Old Town</div>
+</div>
+
+<!-- PLATFORMS BANNER -->
+<div class="platforms">
+  <div class="plat-chip">✓ <span data-i18n="plat_direct">Book directly</span></div>
+  <div class="plat-chip">💰 <span data-i18n="plat_save">No 14% Airbnb fee</span></div>
+  <div class="plat-chip">💬 <span data-i18n="plat_wa">Instant WhatsApp reply</span></div>
+  <div class="plat-chip">🏅 <span data-i18n="plat_host">Superhost 4.9★</span></div>
+</div>
+
+<!-- APARTMENTS -->
+<section id="apartments" style="background:var(--bg2)">
+  <div class="container">
+    <h2 class="section-title" data-i18n="apts_title">Choose your apartment</h2>
+    <p class="section-sub" data-i18n="apts_sub">All apartments are personally managed and regularly inspected.</p>
+    <div class="apt-grid" id="aptGrid"></div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="map-section" id="mapSection">
+  <div class="container">
+    <h2 class="section-title" data-i18n="map_title">All locations on map</h2>
+    <p class="section-sub" data-i18n="map_sub">All three apartments are in the best neighborhoods of Tbilisi.</p>
+    <div class="map-frame">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m20!1m8!1m3!1d11909.44!2d44.793!3d41.6938!3m2!1i1024!2i768!4f13.1!4m9!3e6!4m3!3m2!1d41.6938!2d44.793!4m3!3m2!1d41.6978!2d44.7832!5e0!3m2!1sen!2sge!4v1700000000000!5m2!1sen!2sge&markers=color:green%7Clabel:M%7C41.6938,44.793&markers=color:green%7Clabel:N%7C41.6978,44.7832&markers=color:green%7Clabel:B%7C41.6878,44.8038"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        title="Tbilisi Stays locations"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviewsSection">
+  <div class="container">
+    <h2 class="section-title" data-i18n="reviews_title">Guest reviews</h2>
+    <p class="section-sub" data-i18n="reviews_sub">All reviews are from verified Airbnb guests.</p>
+    <div class="reviews-tabs" id="reviewsTabs">
+      <button class="rtab active" onclick="filterReviews('mel',this)" data-apt="mel">მელიქიშვილი</button>
+      <button class="rtab" onclick="filterReviews('nik',this)" data-apt="nik">ნიკოლაძე</button>
+      <button class="rtab" onclick="filterReviews('bar',this)" data-apt="bar">ბარათაშვილი</button>
+    </div>
+    <div class="reviews-grid" id="reviewsGrid"></div>
+  </div>
+</section>
+
+<!-- NEARBY -->
+<section style="background:var(--bg2)">
+  <div class="container">
+    <h2 class="section-title" data-i18n="nearby_title">What's nearby</h2>
+    <p class="section-sub" data-i18n="nearby_sub">Everything you need is steps away.</p>
+    <div class="nearby-tabs" id="nearbyTabs">
+      <button class="rtab active" onclick="filterNearby('mel',this)" data-apt="mel">მელიქიშვილი</button>
+      <button class="rtab" onclick="filterNearby('nik',this)" data-apt="nik">ნიკოლაძე</button>
+      <button class="rtab" onclick="filterNearby('bar',this)" data-apt="bar">ბარათაშვილი</button>
+    </div>
+    <div class="nearby-grid" id="nearbyGrid"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section">
+  <div class="container">
+    <div class="about-inner">
+      <div>
+        <h2 class="about-title" data-i18n="about_title">Your host, Nino</h2>
+        <p class="about-text" id="aboutText" data-i18n="about_text">I'm Nino — a Tbilisi native and proud Airbnb Superhost since 2016. I personally manage all three apartments and I'm always just a WhatsApp message away. My mission is simple: give you the best Tbilisi experience while saving you the Airbnb fees.</p>
+        <div class="about-stats">
+          <div class="astat"><span class="astat-num">322</span><span class="astat-label" data-i18n="stat_reviews">Reviews</span></div>
+          <div class="astat"><span class="astat-num">4.9★</span><span class="astat-label" data-i18n="stat_rating">Rating</span></div>
+          <div class="astat"><span class="astat-num">9+</span><span class="astat-label" data-i18n="stat_years">Years hosting</span></div>
+        </div>
+      </div>
+      <div>
+        <!-- placeholder host photo slot -->
+        <div style="width:100%;aspect-ratio:4/3;background:rgba(255,255,255,.15);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:80px">🏡</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOUSE RULES -->
+<section>
+  <div class="container">
+    <h2 class="section-title" data-i18n="rules_title">House rules</h2>
+    <p class="section-sub" data-i18n="rules_sub">Please read before booking.</p>
+    <div class="rules-grid" id="rulesGrid"></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="background:var(--bg2)">
+  <div class="container">
+    <h2 class="section-title" data-i18n="faq_title">Frequently asked questions</h2>
+    <div class="faq-list" id="faqList"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section>
+  <div class="container">
+    <h2 class="section-title" data-i18n="contact_title">Get in touch</h2>
+    <p class="section-sub" data-i18n="contact_sub">Questions about availability, custom requests — write anytime.</p>
+    <div class="contact-grid">
+      <div class="contact-form">
+        <div class="form-row">
+          <label data-i18n="form_name">Your name</label>
+          <input id="cName" type="text" placeholder="Name">
+        </div>
+        <div class="form-row">
+          <label data-i18n="form_apt">Apartment</label>
+          <select id="cApt">
+            <option value="" data-i18n="form_apt_any">Any / Not sure yet</option>
+            <option value="mel">მელიქიშვილი — Vera</option>
+            <option value="nik">ნიკოლაძე — Vera Center</option>
+            <option value="bar">ბარათაშვილი — Old Town</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label data-i18n="form_msg">Message</label>
+          <textarea id="cMsg" placeholder="Dates, guests, questions..."></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitContact()" data-i18n="form_send">Send via WhatsApp</button>
+        <div class="success-msg" id="cSuccess" data-i18n="form_sent">✓ Opening WhatsApp...</div>
+      </div>
+      <div class="sub-box">
+        <div class="sub-title" data-i18n="sub_title">Get special offers</div>
+        <div class="sub-desc" data-i18n="sub_desc">Subscribe to be notified of discounts and last-minute availability.</div>
+        <div class="sub-input-row">
+          <input type="email" id="subEmail" placeholder="your@email.com">
+          <button class="sub-btn" onclick="submitSub()" data-i18n="sub_btn">Subscribe</button>
+        </div>
+        <div class="success-msg" id="subSuccess" style="background:rgba(255,255,255,.2);color:#fff;margin-top:10px" data-i18n="sub_sent">✓ Subscribed!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom:8px">© 2026 Tbilisi Stays</div>
+  <div style="margin-bottom:8px"><span data-i18n="footer_prices">All prices in USD</span></div>
+  <div style="display:flex;justify-content:center;gap:16px;margin-top:8px">
+    <a href="https://wa.me/995599161004" target="_blank">WhatsApp</a>
+    <a href="#" onclick="openAdmin();return false" data-i18n="footer_admin">Admin</a>
+  </div>
+</footer>
+
+<!-- MOBILE BOOK BTN -->
+<div class="mobile-book">
+  <button class="mobile-book-btn" onclick="document.getElementById('apartments').scrollIntoView({behavior:'smooth'})" data-i18n="mobile_book">Book Now — Save on Fees</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleModalClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-gallery" id="modalGallery"></div>
+    <div class="modal-body">
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-cal-section">
+        <div class="cal-title" data-i18n="cal_title">Check availability & price</div>
+        <div class="date-row">
+          <div class="date-field">
+            <label data-i18n="cal_in">Check-in</label>
+            <input type="date" id="modalIn" onchange="calcModal()">
+          </div>
+          <div class="date-field">
+            <label data-i18n="cal_out">Check-out</label>
+            <input type="date" id="modalOut" onchange="calcModal()">
+          </div>
+        </div>
+        <div id="priceResult"></div>
+      </div>
+      <button class="modal-book-btn" onclick="bookModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span data-i18n="modal_book_btn">Send booking request via WhatsApp</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button class="lb-nav lb-prev" onclick="lbNav(-1)">‹</button>
+  <img id="lbImg" alt="">
+  <button class="lb-nav lb-next" onclick="lbNav(1)">›</button>
+  <button class="lb-close" onclick="closeLightbox()">×</button>
+  <span id="lbCounter"></span>
+</div>
+
+<!-- ADMIN TRIGGER -->
+<button class="admin-trigger" onclick="openAdmin()" title="Admin">⚙</button>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="adminOverlay" onclick="closeAdmin()"></div>
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-head">
+    <h2>Admin Panel</h2>
+    <button class="admin-close" onclick="closeAdmin()">×</button>
+  </div>
+  <div id="adminLogin">
+    <p style="font-size:14px;color:var(--fg2)">Enter password to access admin panel.</p>
+    <div class="admin-pw-field">
+      <input type="password" id="adminPw" placeholder="Password" onkeydown="if(event.key==='Enter')checkAdmin()">
+      <button onclick="checkAdmin()">Login</button>
+    </div>
+    <div id="adminErr">Incorrect password.</div>
+  </div>
+  <div id="adminContent">
+
+    <!-- STATS -->
+    <div class="admin-section">
+      <h3>Overview</h3>
+      <div class="stats-row" id="occGrid"></div>
+    </div>
+
+    <!-- PHOTOS -->
+    <div class="admin-section">
+      <h3>Photos</h3>
+      <div class="admin-row">
+        <div class="admin-field">
+          <label>Apartment</label>
+          <select id="photoApt" onchange="renderPhotoGrid()">
+            <option value="mel">მელიქიშვილი</option>
+            <option value="nik">ნიკოლაძე</option>
+            <option value="bar">ბარათაშვილი</option>
+          </select>
+        </div>
+      </div>
+      <div class="photo-upload-grid" id="photoGrid"></div>
+      <input type="file" id="photoFile" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
+      <button class="admin-btn" style="margin-top:8px;width:100%" onclick="document.getElementById('photoFile').click()">+ Upload Photos</button>
+      <button class="admin-btn danger" style="margin-top:6px;width:100%" onclick="deleteAllPhotos()">Delete All Photos for This Apt</button>
+    </div>
+
+    <!-- DESCRIPTIONS -->
+    <div class="admin-section">
+      <h3>Descriptions</h3>
+      <div class="admin-row">
+        <div class="admin-field">
+          <label>Apartment</label>
+          <select id="descApt" onchange="loadDesc()">
+            <option value="mel">მელიქიშვილი</option>
+            <option value="nik">ნიკოლაძე</option>
+            <option value="bar">ბარათაშვილი</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-field" style="margin-top:8px">
+        <label>Description (shown in booking modal)</label>
+        <textarea id="descText" rows="4"></textarea>
+      </div>
+      <button class="admin-btn" style="margin-top:8px" onclick="saveDesc()">Save Description</button>
+    </div>
+
+    <!-- ABOUT ME -->
+    <div class="admin-section">
+      <h3>About Me Text</h3>
+      <div class="admin-field">
+        <textarea id="aboutMeText" rows="4"></textarea>
+      </div>
+      <button class="admin-btn" style="margin-top:8px" onclick="saveAboutMe()">Save About Me</button>
+    </div>
+
+    <!-- HOUSE RULES -->
+    <div class="admin-section">
+      <h3>House Rules</h3>
+      <div id="rulesAdmin" style="margin-bottom:10px"></div>
+      <div class="admin-row">
+        <div class="admin-field"><label>Icon (emoji)</label><input id="ruleIcon" placeholder="🚭"></div>
+        <div class="admin-field"><label>Rule text</label><input id="ruleText" placeholder="No smoking"></div>
+        <button class="admin-btn" onclick="addRule()">Add</button>
+      </div>
+      <button class="admin-btn" style="margin-top:6px;width:100%" onclick="saveRules()">Save All Rules</button>
+    </div>
+
+    <!-- REVENUE -->
+    <div class="admin-section">
+      <h3>Revenue</h3>
+      <div class="admin-row">
+        <div class="admin-field"><label>Month</label><input type="month" id="revMonth" value="2026-10"></div>
+      </div>
+      <div class="admin-row">
+        <div class="admin-field"><label>Airbnb ($)</label><input type="number" id="revAirbnb" placeholder="0"></div>
+        <div class="admin-field"><label>Booking.com ($)</label><input type="number" id="revBooking" placeholder="0"></div>
+        <div class="admin-field"><label>Direct ($)</label><input type="number" id="revDirect" placeholder="0"></div>
+        <button class="admin-btn" onclick="saveRevenue()">Save</button>
+      </div>
+      <div id="revChart" style="margin-top:10px"></div>
+      <div id="monthlyChart" style="margin-top:10px"></div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="admin-section">
+      <h3>Booking Log</h3>
+      <div class="admin-row">
+        <div class="admin-field"><label>Guest</label><input id="bhGuest" placeholder="Name"></div>
+        <div class="admin-field"><label>Apt</label>
+          <select id="bhApt">
+            <option value="mel">Mel</option><option value="nik">Nik</option><option value="bar">Bar</option>
+          </select>
+        </div>
+        <div class="admin-field"><label>Revenue ($)</label><input type="number" id="bhRev" placeholder="0"></div>
+        <div class="admin-field"><label>Channel</label>
+          <select id="bhCh"><option>Direct</option><option>Airbnb</option><option>Booking</option></select>
+        </div>
+        <button class="admin-btn" onclick="addBooking()">Add</button>
+      </div>
+      <table class="booking-table"><thead><tr><th>Guest</th><th>Apt</th><th>Rev</th><th>Ch</th></tr></thead><tbody id="bookingBody"></tbody></table>
+    </div>
+
+    <!-- PRICE OVERRIDE -->
+    <div class="admin-section">
+      <h3>Price Override</h3>
+      <div class="admin-row">
+        <div class="admin-field"><label>Apartment</label>
+          <select id="prApt"><option value="mel">Mel</option><option value="nik">Nik</option><option value="bar">Bar</option></select>
+        </div>
+        <div class="admin-field"><label>Price/night ($)</label><input type="number" id="prPrice" placeholder="0 = reset"></div>
+        <button class="admin-btn" onclick="savePrice()">Save</button>
+      </div>
+    </div>
+
+    <!-- DATE BLOCKING -->
+    <div class="admin-section">
+      <h3>Block/Unblock Dates</h3>
+      <div class="admin-row">
+        <div class="admin-field"><label>Apartment</label>
+          <select id="blApt"><option value="mel">Mel</option><option value="nik">Nik</option><option value="bar">Bar</option></select>
+        </div>
+        <div class="admin-field"><label>Date</label><input type="date" id="blDate"></div>
+        <button class="admin-btn" onclick="blockDate()">Block</button>
+        <button class="admin-btn danger" onclick="unblockDate()">Unblock</button>
+      </div>
+    </div>
+
+    <!-- SUBSCRIBERS -->
+    <div class="admin-section">
+      <h3>Email Subscribers</h3>
+      <div id="subList" class="sub-list"></div>
+      <button class="admin-btn danger" style="margin-top:8px" onclick="clearSubs()">Clear All</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== I18N =====
+const T = {
+  en: {
+    hero_eyebrow:'Tbilisi · Georgia',
+    hero_title:'Your home in the heart of Tbilisi',
+    hero_subtitle:'Book directly — no Airbnb fees. Save up to $25 per stay.',
+    hero_cta:'View Apartments',
+    hero_badge:'3 apartments · Vera & Old Town',
+    plat_direct:'Book directly',
+    plat_save:'No 14% Airbnb fee',
+    plat_wa:'Instant WhatsApp reply',
+    plat_host:'Superhost 4.9★',
+    apts_title:'Choose your apartment',
+    apts_sub:'All apartments are personally managed and regularly inspected.',
+    map_title:'All locations on map',
+    map_sub:'All three apartments are in the best neighborhoods of Tbilisi.',
+    reviews_title:'Guest reviews',
+    reviews_sub:'All reviews are from verified Airbnb guests.',
+    nearby_title:"What's nearby",
+    nearby_sub:'Everything you need is steps away.',
+    about_title:'Your host, Nino',
+    about_text:"I'm Nino — a Tbilisi native and proud Airbnb Superhost since 2016. I personally manage all three apartments and I'm always just a WhatsApp message away. My mission is simple: give you the best Tbilisi experience while saving you the Airbnb fees.",
+    stat_reviews:'Reviews',stat_rating:'Rating',stat_years:'Years hosting',
+    rules_title:'House rules',rules_sub:'Please read before booking.',
+    faq_title:'Frequently asked questions',
+    contact_title:'Get in touch',
+    contact_sub:'Questions about availability, custom requests — write anytime.',
+    form_name:'Your name',form_apt:'Apartment',form_apt_any:'Any / Not sure yet',
+    form_msg:'Message',form_send:'Send via WhatsApp',form_sent:'✓ Opening WhatsApp...',
+    sub_title:'Get special offers',
+    sub_desc:'Subscribe to be notified of discounts and last-minute availability.',
+    sub_btn:'Subscribe',sub_sent:'✓ Subscribed!',
+    footer_prices:'All prices in USD',footer_admin:'Admin',
+    mobile_book:'Book Now — Save on Fees',
+    cal_title:'Check availability & price',cal_in:'Check-in',cal_out:'Check-out',
+    modal_book_btn:'Send booking request via WhatsApp',
+    btn_book:'Select dates',
+    nights:'nights',cleaning:'Cleaning fee',total:'Total',
+    blocked_msg:'⚠️ One or more dates in this period are unavailable. Please try different dates.',
+    date_order_msg:'Check-out must be after check-in.',
+    save_msg:'✓ You save ~$',save_msg2:' vs. Airbnb',
+    viewing:' people viewing now',
+    last_booked:'Last booked:',
+    reviews_label:'reviews',
+  },
+  ka: {
+    hero_eyebrow:'თბილისი · საქართველო',
+    hero_title:'თქვენი სახლი თბილისის გულში',
+    hero_subtitle:'დაჯავშნეთ პირდაპირ — Airbnb-ის გადასახადის გარეშე. დაზოგეთ $25-მდე.',
+    hero_cta:'ბინების ნახვა',
+    hero_badge:'3 ბინა · Vera & ძველი თბილისი',
+    plat_direct:'პირდაპირი ჯავშანი',
+    plat_save:'Airbnb-ის 14% გადასახადი არ ერიცხება',
+    plat_wa:'სწრაფი პასუხი WhatsApp-ზე',
+    plat_host:'Superhost 4.9★',
+    apts_title:'აირჩიეთ ბინა',
+    apts_sub:'ყველა ბინა პირადად მართულია და რეგულარულად შემოწმებული.',
+    map_title:'ყველა ლოკაცია რუკაზე',
+    map_sub:'სამივე ბინა თბილისის საუკეთესო უბნებში მდებარეობს.',
+    reviews_title:'სტუმრების შეფასებები',
+    reviews_sub:'ყველა შეფასება Airbnb-ის ვერიფიცირებული სტუმრებისგანაა.',
+    nearby_title:'რა არის ახლოს',
+    nearby_sub:'ყველაფერი, რაც გჭირდებათ, ნაბიჯების დაშორებაზეა.',
+    about_title:'თქვენი მასპინძელი, ნინო',
+    about_text:'მე ვარ ნინო — თბილისელი და Airbnb Superhost 2016 წლიდან. პირადად ვმართავ სამივე ბინას და ყოველთვის ხელმისაწვდომი ვარ WhatsApp-ზე. ჩემი მიზანი მარტივია: მოგაწოდოთ საუკეთესო თბილისური გამოცდილება Airbnb-ის გადასახადების გარეშე.',
+    stat_reviews:'შეფასება',stat_rating:'რეიტინგი',stat_years:'წელი',
+    rules_title:'სახლის წესები',rules_sub:'გთხოვთ, წაიკითხოთ ჯავშნამდე.',
+    faq_title:'ხშირად დასმული კითხვები',
+    contact_title:'დაგვიკავშირდით',
+    contact_sub:'კითხვები ხელმისაწვდომობაზე — ნებისმიერ დროს მოგვწერეთ.',
+    form_name:'თქვენი სახელი',form_apt:'ბინა',form_apt_any:'ნებისმიერი',
+    form_msg:'შეტყობინება',form_send:'WhatsApp-ით გაგზავნა',form_sent:'✓ WhatsApp იხსნება...',
+    sub_title:'მიიღეთ სპეციალური შეთავაზებები',
+    sub_desc:'გამოიწერეთ და მიიღეთ შეტყობინება ფასდაკლებებსა და ბოლო წუთის ხელმისაწვდომობაზე.',
+    sub_btn:'გამოწერა',sub_sent:'✓ გამოწერილია!',
+    footer_prices:'ყველა ფასი USD-ში',footer_admin:'ადმინი',
+    mobile_book:'დაჯავშნეთ — დაზოგეთ',
+    cal_title:'შეამოწმეთ ხელმისაწვდომობა',cal_in:'შემოსვლა',cal_out:'გასვლა',
+    modal_book_btn:'WhatsApp-ით ჯავშნა',
+    btn_book:'თარიღების არჩევა',
+    nights:'ღამე',cleaning:'დასუფთავება',total:'სულ',
+    blocked_msg:'⚠️ ამ პერიოდში ერთი ან მეტი თარიღი დაკავებულია.',
+    date_order_msg:'გამოსვლის თარიღი შემოსვლის შემდეგ უნდა იყოს.',
+    save_msg:'✓ დაზოგავთ ~$',save_msg2:' Airbnb-სთან შედარებით',
+    viewing:' ადამიანი უყურებს',
+    last_booked:'ბოლოს დაჯავშნა:',
+    reviews_label:'რეიუ',
+  }
+};
+let lang = 'en';
+function setLang(l){
+  lang=l;
+  document.getElementById('btnEN').classList.toggle('active',l==='en');
+  document.getElementById('btnKA').classList.toggle('active',l==='ka');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(T[l][k]) el.textContent=T[l][k];
+  });
+  renderCards();
+  renderRules();
+  renderFAQ();
+  // update about text if not overridden
+  const stored=localStorage.getItem('aboutMe_'+l)||localStorage.getItem('aboutMe');
+  document.getElementById('aboutText').textContent=stored||T[l].about_text;
+}
+function t(k){return T[lang][k]||T['en'][k]||k;}
+
+// ===== DATA =====
+const APTS = {
+  mel: {
+    name:'მელიქიშვილი', loc:'Vera უბანი', price:62, airbnbPrice:65, cleaning:65,
+    rating:4.95, reviews:190, guests:6, beds:3, baths:2,
+    lastBooked:'2 days ago',
+    freeThisMonth:8,
+    photos:[],
+    defaultPhotos:[
+      'https://a0.muscache.com/im/pictures/miso/Hosting-30368959/original/f4bfbc23-0eb5-4d26-8316-8cc0ca98bfe7.jpeg',
+      'https://a0.muscache.com/im/pictures/miso/Hosting-30368959/original/8bc3c68e-3cd7-4437-af86-4e5289f8e7d0.jpeg',
+      'https://a0.muscache.com/im/pictures/miso/Hosting-30368959/original/f3f28a1c-f581-45f4-a9e2-d60d7a62f2ab.jpeg',
+    ],
+    chips:['3 bed','6 guests','Parking','WiFi'],
+    airbnbUrl:'https://www.airbnb.com/rooms/30368959',
+    desc:{en:'Spacious 3-bedroom apartment in the heart of Vera — Tbilisi\'s most desirable neighborhood. Bright rooms, full kitchen, parking, and everything you need for a comfortable stay. 15 min walk to Rustaveli.',
+          ka:'სივრცული 3-ოთახიანი ბინა Vera-ს ცენტრში — თბილისის ყველაზე სასურველ უბანში. გაბრწყინებული ოთახები, სრული სამზარეულო, პარკინგი. 15 წუთი ფეხით მეტეხამდე.'}
+  },
+  nik: {
+    name:'ნიკოლაძე', loc:'Vera Center', price:43, airbnbPrice:45, cleaning:35,
+    rating:4.88, reviews:74, guests:3, beds:1, baths:1,
+    lastBooked:'5 days ago',
+    freeThisMonth:12,
+    photos:[],
+    defaultPhotos:[
+      'https://a0.muscache.com/im/pictures/miso/Hosting-1660044826140606826/original/fe55d3e3-3fcf-40e9-aa3d-68d9a8b4d6fa.jpeg',
+      'https://a0.muscache.com/im/pictures/miso/Hosting-1660044826140606826/original/cb0cfa89-fe48-490a-91fe-9c3d35e45d3f.jpeg',
+    ],
+    chips:['1 bed','3 guests','WiFi','Central'],
+    airbnbUrl:'https://www.airbnb.com/rooms/1660044826140606826',
+    desc:{en:'Cozy 1-bedroom apartment in Vera Center — steps from cafes, restaurants, and the Rustaveli metro. Perfect for couples or solo travelers seeking a quiet base in the city.',
+          ka:'მყუდრო 1-ოთახიანი ბინა Vera Center-ში — კაფეებიდან, რესტორნებიდან და Rustaveli-ს მეტროსგან ნაბიჯებში. იდეალური წყვილებისა და მარტო მოგზაურებისთვის.'}
+  },
+  bar: {
+    name:'ბარათაშვილი', loc:'ძველი თბილისი', price:67, airbnbPrice:71, cleaning:55,
+    rating:4.90, reviews:58, guests:5, beds:2, baths:1,
+    lastBooked:'1 day ago',
+    freeThisMonth:6,
+    photos:[],
+    defaultPhotos:[
+      'https://a0.muscache.com/im/pictures/miso/Hosting-1368772735616662381/original/3aac0bcc-8a20-4d89-ad74-73c4e3f91c55.jpeg',
+      'https://a0.muscache.com/im/pictures/miso/Hosting-1368772735616662381/original/bc58db9f-1571-4e8a-a4ec-0d1f0ddb6d2b.jpeg',
+    ],
+    chips:['2 bed','5 guests','Old Town views','WiFi'],
+    airbnbUrl:'https://www.airbnb.com/rooms/1368772735616662381',
+    desc:{en:'Unique 2-bedroom apartment in the heart of Old Tbilisi. Windows face both the courtyard and the historic Baratashvili street. Waking up to Old Town views is magical.',
+          ka:'უნიკალური 2-ოთახიანი ბინა ძველი თბილისის გულში. ფანჯრები ეზოსა და ისტორიულ ბარათაშვილის ქუჩაზე გახსნილია. ძველი ქალაქის ხედებით გამოღვიძება ჯადოსნურია.'}
+  }
+};
+
+const REVIEWS = {
+  mel:[
+    {name:'Liya',date:'3–11 Oct 2026',stars:5,text:"Great stay — comfortable, clean, central. Would highly recommend for Vera. Thanks Nino!"},
+    {name:'Diyana Syafiqah',date:'30 Jul – 3 Aug 2026',stars:5,text:'Amazing apartment as described. Very clean, shops and parks all around. Thank you Nino!'},
+    {name:'Artemii',date:'11–18 Oct 2026',stars:5,text:'Excellent stay, great location near the center, clean, matches photos. Responsive host. Very happy!'},
+  ],
+  nik:[
+    {name:'Anatoly',date:'8–9 Jun 2026',stars:5,text:'Really enjoyed staying at the apartment. Very nice location.'},
+    {name:'Inessa',date:'29 May – 2 Jun 2026',stars:5,text:'Comfortable, clean accommodation. Very cozy and warm. Everything you need. Host always available.'},
+    {name:'Ava',date:'24–28 Sept 2026',stars:5,text:'Lovely apartment and great central location.'},
+  ],
+  bar:[
+    {name:'Amit',date:'29 Sept – 3 Oct 2026',stars:5,text:'The apartment exceeded all expectations! Simply amazing. Great location and wonderful host.'},
+    {name:'Tatevik',date:'19–23 Sept 2026',stars:5,text:'Perfect stay! Clean, spacious and central. Views from both the courtyard and Old Town street were wonderful.'},
+    {name:'Sarah',date:'Oct 2026',stars:5,text:'Spacious, spotless apartment. Waking up to Old Tbilisi views was magical. Highly recommend.'},
+  ]
+};
+
+const NEARBY = {
+  mel:[
+    {icon:'🍷',name:'Vino Underground',dist:'8 min walk'},
+    {icon:'🏃',name:'Vake Park',dist:'12 min walk'},
+    {icon:'🛒',name:'Goodwill Supermarket',dist:'5 min walk'},
+    {icon:'🚇',name:'Rustaveli Metro',dist:'15 min walk'},
+    {icon:'☕',name:'Fabrika',dist:'10 min walk'},
+    {icon:'🍽️',name:'Vera restaurants',dist:'3–10 min'},
+    {icon:'💊',name:'Pharmacy',dist:'3 min walk'},
+    {icon:'🏧',name:'ATM / Bank of Georgia',dist:'5 min walk'},
+  ],
+  nik:[
+    {icon:'🚇',name:'Rustaveli Metro',dist:'7 min walk'},
+    {icon:'☕',name:'Cafes in Vera Center',dist:'2–5 min'},
+    {icon:'🛒',name:'Supermarket',dist:'4 min walk'},
+    {icon:'🏛️',name:'National Museum',dist:'10 min walk'},
+    {icon:'🍽️',name:'Restaurants',dist:'5 min walk'},
+    {icon:'🌳',name:'Vera Park',dist:'8 min walk'},
+    {icon:'💊',name:'Pharmacy',dist:'3 min walk'},
+    {icon:'🏧',name:'ATM',dist:'2 min walk'},
+  ],
+  bar:[
+    {icon:'⛪',name:'Metekhi Church',dist:'5 min walk'},
+    {icon:'🌉',name:'Bridge of Peace',dist:'8 min walk'},
+    {icon:'🛁',name:'Sulfur Baths',dist:'10 min walk'},
+    {icon:'🍷',name:'Wine bars',dist:'3–7 min'},
+    {icon:'🚡',name:'Cable car',dist:'12 min walk'},
+    {icon:'🛒',name:'Carrefour',dist:'10 min walk'},
+    {icon:'🎨',name:'Armenian Quarter',dist:'5 min walk'},
+    {icon:'🏧',name:'ATM',dist:'3 min walk'},
+  ]
+};
+
+const NEARBY_KA = {
+  mel:[
+    {icon:'🍷',name:'Vino Underground',dist:'8 წთ ფეხით'},
+    {icon:'🏃',name:'Vake პარკი',dist:'12 წთ ფეხით'},
+    {icon:'🛒',name:'Goodwill სუპერმარკეტი',dist:'5 წთ ფეხით'},
+    {icon:'🚇',name:'სადგური Rustaveli',dist:'15 წთ ფეხით'},
+    {icon:'☕',name:'Fabrika',dist:'10 წთ ფეხით'},
+    {icon:'🍽️',name:'რესტორნები Vera-ში',dist:'3–10 წთ'},
+    {icon:'💊',name:'აფთიაქი',dist:'3 წთ ფეხით'},
+    {icon:'🏧',name:'ATM / Bank of Georgia',dist:'5 წთ ფეხით'},
+  ],
+  nik:[
+    {icon:'🚇',name:'სადგური Rustaveli',dist:'7 წთ ფეხით'},
+    {icon:'☕',name:'კაფეები Vera Center-ში',dist:'2–5 წთ'},
+    {icon:'🛒',name:'სუპერმარკეტი',dist:'4 წთ ფეხით'},
+    {icon:'🏛️',name:'ეროვნული მუზეუმი',dist:'10 წთ ფეხით'},
+    {icon:'🍽️',name:'რესტორნები',dist:'5 წთ ფეხით'},
+    {icon:'🌳',name:'Vera Park',dist:'8 წთ ფეხით'},
+    {icon:'💊',name:'აფთიაქი',dist:'3 წთ ფეხით'},
+    {icon:'🏧',name:'ATM',dist:'2 წთ ფეხით'},
+  ],
+  bar:[
+    {icon:'⛪',name:'მეტეხის ტაძარი',dist:'5 წთ ფეხით'},
+    {icon:'🌉',name:'მშვიდობის ხიდი',dist:'8 წთ ფეხით'},
+    {icon:'🛁',name:'გოგირდის აბანოები',dist:'10 წთ ფეხით'},
+    {icon:'🍷',name:'ღვინის ბარები',dist:'3–7 წთ'},
+    {icon:'🚡',name:'კანატგზა',dist:'12 წთ ფეხით'},
+    {icon:'🛒',name:'Carrefour',dist:'10 წთ ფეხით'},
+    {icon:'🎨',name:'სომხური კვარტალი',dist:'5 წთ ფეხით'},
+    {icon:'🏧',name:'ATM',dist:'3 წთ ფეხით'},
+  ]
+};
+
+const FAQS_EN = [
+  {q:'How do I book?',a:'Via WhatsApp (+995 599 161 004) or using the contact form below. I confirm bookings within 1 hour.'},
+  {q:'What currency are prices in?',a:'All prices are in USD. Payment is possible by card, bank transfer, or cash.'},
+  {q:'Why is it cheaper than Airbnb?',a:'Booking directly cuts out Airbnb\'s 14–16% service fee. You typically save $15–25 per booking.'},
+  {q:'Can I check in early or check out late?',a:'I do my best to accommodate — contact me on WhatsApp in advance. It\'s often possible depending on availability.'},
+  {q:'Is the calendar up to date?',a:'Yes — blocked dates are updated manually. When in doubt, message me on WhatsApp to confirm availability.'},
+  {q:'Is there a minimum stay?',a:'Minimum 1 night. For longer stays (7+ nights) I offer a special rate — ask on WhatsApp.'},
+];
+const FAQS_KA = [
+  {q:'როგორ შეიძლება დაჯავშნა?',a:'WhatsApp-ით (+995 599 161 004) ან ქვემოთ მოცემული ფორმის გამოყენებით. ვუგზავნი ჯავშნის დასტურს 1 საათის განმავლობაში.'},
+  {q:'რა ვალუტაში ხდება გადახდა?',a:'ყველა ფასი მოცემულია აშშ დოლარში. გადახდა შესაძლებელია ბარათით, გადარიცხვით ან ნაღდი ფულით.'},
+  {q:'Airbnb-ზე რატომ იაფია?',a:'პირდაპირი ჯავშნით Airbnb-ის 14–16%-იანი სერვისის გადასახადი გამოირიცხება. ჩვეულებრივ $15–25 დაზოგავთ ყოველ ჯავშანზე.'},
+  {q:'შეიძლება ადრე Check-in ან გვიანი Check-out?',a:'ვცდილობ მოხერხება — დამიკავშირდით წინასწარ WhatsApp-ით. ხელმისაწვდომობიდან გამომდინარე, ხშირად შეიძლება.'},
+  {q:'კალენდარი სწორია?',a:'დიახ — დაბლოკილი თარიღები ხელით განახლდება. ეჭვის შემთხვევაში WhatsApp-ით მომწერეთ.'},
+  {q:'მინიმალური ღამეების რაოდენობა?',a:'მინიმუმი 1 ღამეა. გრძელი ყოფნისთვის (7+ ღამე) ვაკეთებ სპეციალურ ფასს.'},
+];
+
+const DEFAULT_RULES = [
+  {icon:'🚭',text_en:'No smoking indoors',text_ka:'მოწევა შიგნით აკრძალულია'},
+  {icon:'🎉',text_en:'No parties or events',text_ka:'წვეულებები არ არის დაშვებული'},
+  {icon:'🕙',text_en:'Check-in from 3 PM, check-out by 11 AM',text_ka:'შემოსვლა 15:00-დან, გასვლა 11:00-მდე'},
+  {icon:'🐾',text_en:'Pets welcome for an additional fee',text_ka:'შინაური ცხოველები მისაღებია დამატებითი საფასურით'},
+  {icon:'🔇',text_en:'Quiet hours after 10 PM',text_ka:'სიჩუმე 22:00 საათის შემდეგ'},
+];
+
+// ===== STATE =====
+let bookedDates={mel:[],nik:[],bar:[]};
+let manualBlocked=JSON.parse(localStorage.getItem('manualBlocked')||'{"mel":[],"nik":[],"bar":[]}');
+let priceOverrides=JSON.parse(localStorage.getItem('priceOverrides')||'{}');
+let adminBookings=JSON.parse(localStorage.getItem('adminBookings')||'[]');
+let revenueData=JSON.parse(localStorage.getItem('revenueData')||'{}');
+let subscribers=JSON.parse(localStorage.getItem('subscribers')||'[]');
+let customRules=JSON.parse(localStorage.getItem('customRules')||'null');
+let customDescs=JSON.parse(localStorage.getItem('customDescs')||'{}');
+let currentApt=null;
+let currentLbPhotos=[];
+let currentLbIdx=0;
+let touchStartX=0;
+
+// Load custom photos into APTS
+function loadPhotos(){
+  Object.keys(APTS).forEach(id=>{
+    const stored=JSON.parse(localStorage.getItem('photos_'+id)||'null');
+    APTS[id].photos=stored&&stored.length?stored:APTS[id].defaultPhotos;
+  });
+}
+loadPhotos();
+
+// Load custom descriptions
+function loadAllDescs(){
+  Object.keys(APTS).forEach(id=>{
+    if(customDescs[id]){
+      APTS[id].desc.custom=customDescs[id];
+    }
+  });
+}
+loadAllDescs();
+
+// ===== HERO PHOTOS =====
+function initHero(){
+  const allPhotos=[];
+  Object.values(APTS).forEach(a=>allPhotos.push(...a.photos));
+  const shuffled=allPhotos.sort(()=>Math.random()-.5).slice(0,6);
+  for(let i=1;i<=6;i++){
+    const img=document.getElementById('heroImg'+i);
+    if(img&&shuffled[i-1]) img.src=shuffled[i-1];
+  }
+}
+
+// ===== RENDER CARDS =====
+function renderCards(){
+  const g=document.getElementById('aptGrid');
+  g.innerHTML='';
+  Object.entries(APTS).forEach(([id,a])=>{
+    const price=priceOverrides[id]||a.price;
+    const card=document.createElement('div');
+    card.className='apt-card';
+    const photosHtml=a.photos.length
+      ?a.photos.map((p,i)=>`<div class="c-photo-slide" onclick="openLightbox('${id}',${i})"><img src="${p}" alt="${a.name}" loading="${i===0?'eager':'lazy'}"></div>`).join('')
+      :`<div class="c-photo-slide"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#E8F4EE;color:#1B6B4A;font-size:40px">🏠</div></div>`;
+    card.innerHTML=`
+      <div class="c-photo" id="photo-${id}">
+        <div class="c-photo-inner" id="inner-${id}">${photosHtml}</div>
+        <div class="c-photo-nav">
+          <button class="pnav-btn" onclick="event.stopPropagation();slideCard('${id}',-1)">‹</button>
+          <button class="pnav-btn" onclick="event.stopPropagation();slideCard('${id}',1)">›</button>
+        </div>
+        <div class="c-photo-dots" id="dots-${id}">
+          ${a.photos.map((_,i)=>`<div class="pdot${i===0?' active':''}" id="dot-${id}-${i}"></div>`).join('')}
+        </div>
+        <div class="c-badges">
+          <div class="badge-superhost">🏅 Superhost</div>
+          <div class="badge-booked">⏱ ${t('last_booked')} ${a.lastBooked}</div>
+        </div>
+        <div class="c-price-badge">$${price}<span class="pnight">/night</span></div>
+      </div>
+      ${a.freeThisMonth<=10?`<div class="urgency-strip">🔥 Only ${a.freeThisMonth} dates free this month</div>`:''}
+      <div class="c-body">
+        <div class="c-name">${a.name}</div>
+        <div class="c-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${a.loc}</div>
+        <div class="c-rating"><div class="stars">${'★'.repeat(5)}</div><div class="c-rating-num">${a.rating}</div><div class="c-rating-cnt">(${a.reviews} ${t('reviews_label')})</div></div>
+        <div class="c-chips">${a.chips.map(c=>`<div class="chip">${c}</div>`).join('')}</div>
+      </div>
+      <div class="c-foot">
+        <button class="btn-book" onclick="openModal('${id}')">${t('btn_book')}</button>
+        <a class="btn-wa" href="https://wa.me/995599161004?text=${encodeURIComponent('Hello Nino! Interested in '+a.name+'.')}" target="_blank">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+      </div>
+    `;
+    const photoEl=card.querySelector('#photo-'+id);
+    photoEl.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
+    photoEl.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-touchStartX;
+      if(Math.abs(dx)>40) slideCard(id,dx<0?1:-1);
+    },{passive:true});
+    g.appendChild(card);
+  });
+}
+
+let cardIdxs={mel:0,nik:0,bar:0};
+function slideCard(id,dir){
+  const a=APTS[id];
+  if(!a.photos.length) return;
+  cardIdxs[id]=(cardIdxs[id]+dir+a.photos.length)%a.photos.length;
+  const inner=document.getElementById('inner-'+id);
+  if(inner) inner.style.transform=`translateX(-${cardIdxs[id]*100}%)`;
+  document.querySelectorAll(`[id^="dot-${id}-"]`).forEach((d,i)=>{
+    d.classList.toggle('active',i===cardIdxs[id]);
+  });
+}
+
+// ===== MODAL =====
+function openModal(id){
+  currentApt=id;
+  const a=APTS[id];
+  document.getElementById('modalTitle').textContent=a.name+' — '+a.loc;
+  const g=document.getElementById('modalGallery');
+  if(a.photos.length){
+    g.innerHTML=a.photos.map((p,i)=>`<img src="${p}" alt="" onclick="openLightbox('${id}',${i})" loading="lazy">`).join('');
+  } else {
+    g.innerHTML='<div style="padding:16px;color:var(--fg2);font-size:14px">No photos uploaded yet.</div>';
+  }
+  const desc=customDescs[id]||a.desc[lang]||a.desc.en;
+  document.getElementById('modalDesc').textContent=desc;
+  document.getElementById('modalIn').value='';
+  document.getElementById('modalOut').value='';
+  document.getElementById('priceResult').innerHTML='';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleModalClick(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function calcModal(){
+  const id=currentApt;
+  if(!id) return;
+  const a=APTS[id];
+  const price=priceOverrides[id]||a.price;
+  const inVal=document.getElementById('modalIn').value;
+  const outVal=document.getElementById('modalOut').value;
+  const res=document.getElementById('priceResult');
+  if(!inVal||!outVal){res.innerHTML='';return;}
+  const d1=new Date(inVal),d2=new Date(outVal);
+  if(d2<=d1){res.innerHTML=`<div class="price-msg">${t('date_order_msg')}</div>`;return;}
+  const nights=Math.round((d2-d1)/86400000);
+  if(nights<1){res.innerHTML='';return;}
+  const allBlocked=[...bookedDates[id],...(manualBlocked[id]||[])];
+  let cur=new Date(d1),blocked=false;
+  while(cur<d2){
+    if(allBlocked.includes(cur.toISOString().split('T')[0])){blocked=true;break;}
+    cur.setDate(cur.getDate()+1);
+  }
+  if(blocked){res.innerHTML=`<div class="price-msg">${t('blocked_msg')}</div>`;return;}
+  const subtotal=nights*price;
+  const total=subtotal+a.cleaning;
+  const airbnbTotal=nights*a.airbnbPrice+a.cleaning+Math.round(subtotal*0.14);
+  const saved=airbnbTotal-total;
+  res.innerHTML=`
+    <div class="price-breakdown">
+      <div class="pb-row"><span>$${price} × ${nights} ${t('nights')}</span><span>$${subtotal}</span></div>
+      <div class="pb-row"><span>${t('cleaning')}</span><span>$${a.cleaning}</span></div>
+      <div class="pb-row"><span style="font-weight:700">${t('total')}</span><span style="font-weight:700">$${total}</span></div>
+    </div>
+    <div class="price-msg" style="margin-top:10px">
+      <span class="save-highlight">${t('save_msg')}${saved}${t('save_msg2')}</span>
+    </div>
+  `;
+}
+
+function bookModal(){
+  const id=currentApt;
+  if(!id) return;
+  const a=APTS[id];
+  const inVal=document.getElementById('modalIn').value;
+  const outVal=document.getElementById('modalOut').value;
+  const msg=inVal&&outVal
+    ?`Hello Nino! I'd like to book ${a.name}: ${inVal} to ${outVal}.`
+    :`Hello Nino! I'm interested in booking ${a.name}.`;
+  window.open(`https://wa.me/995599161004?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ===== LIGHTBOX =====
+function openLightbox(id,idx){
+  currentLbPhotos=APTS[id].photos;
+  currentLbIdx=idx;
+  updateLb();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+function lbNav(dir){
+  currentLbIdx=(currentLbIdx+dir+currentLbPhotos.length)%currentLbPhotos.length;
+  updateLb();
+}
+function updateLb(){
+  document.getElementById('lbImg').src=currentLbPhotos[currentLbIdx];
+  document.getElementById('lbCounter').textContent=`${currentLbIdx+1} / ${currentLbPhotos.length}`;
+}
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('lightbox').classList.contains('open')){
+    if(e.key==='ArrowRight')lbNav(1);
+    if(e.key==='ArrowLeft')lbNav(-1);
+    if(e.key==='Escape')closeLightbox();
+  }
+  if(document.getElementById('modalOverlay').classList.contains('open')&&e.key==='Escape')closeModal();
+});
+
+// ===== REVIEWS =====
+function filterReviews(id,btn){
+  document.querySelectorAll('#reviewsTabs .rtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReviews(id);
+}
+function renderReviews(id){
+  const g=document.getElementById('reviewsGrid');
+  g.innerHTML=REVIEWS[id].map(r=>`
+    <div class="review-card">
+      <div class="rv-top">
+        <div class="rv-avatar">${r.name[0]}</div>
+        <div><div class="rv-name">${r.name}</div><div class="rv-date">${r.date}</div></div>
+      </div>
+      <div class="rv-stars">${'★'.repeat(r.stars)}</div>
+      <div class="rv-text">${r.text}</div>
+    </div>
+  `).join('');
+}
+
+// ===== NEARBY =====
+function filterNearby(id,btn){
+  document.querySelectorAll('#nearbyTabs .rtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNearby(id);
+}
+function renderNearby(id){
+  const data=lang==='ka'?NEARBY_KA:NEARBY;
+  const g=document.getElementById('nearbyGrid');
+  g.innerHTML=data[id].map(n=>`
+    <div class="nearby-card">
+      <div class="nearby-icon">${n.icon}</div>
+      <div class="nearby-name">${n.name}</div>
+      <div class="nearby-dist">📍 ${n.dist}</div>
+    </div>
+  `).join('');
+}
+
+// ===== RULES =====
+function getRules(){
+  return customRules||DEFAULT_RULES;
+}
+function renderRules(){
+  const rules=getRules();
+  const g=document.getElementById('rulesGrid');
+  g.innerHTML=rules.map(r=>`
+    <div class="rule-item">
+      <div class="rule-icon">${r.icon}</div>
+      <div class="rule-text">${lang==='ka'?(r.text_ka||r.text_en):r.text_en}</div>
+    </div>
+  `).join('');
+}
+
+// ===== FAQ =====
+function renderFAQ(){
+  const faqs=lang==='ka'?FAQS_KA:FAQS_EN;
+  const l=document.getElementById('faqList');
+  l.innerHTML=faqs.map((f,i)=>`
+    <div class="faq-item">
+      <button class="faq-q" id="fq${i}" onclick="toggleFaq(${i})">${f.q}<span class="faq-icon">+</span></button>
+      <div class="faq-a" id="fa${i}">${f.a}</div>
+    </div>
+  `).join('');
+}
+function toggleFaq(i){
+  document.getElementById('fq'+i).classList.toggle('open');
+  document.getElementById('fa'+i).classList.toggle('open');
+}
+
+// ===== CONTACT =====
+function submitContact(){
+  const name=document.getElementById('cName').value;
+  const apt=document.getElementById('cApt').value;
+  const msg=document.getElementById('cMsg').value;
+  const aptName=apt?APTS[apt].name:'';
+  const text=`Hello Nino! ${name?name+' here. ':''}${aptName?'Re: '+aptName+'. ':''}${msg}`;
+  window.open(`https://wa.me/995599161004?text=${encodeURIComponent(text)}`,'_blank');
+  const s=document.getElementById('cSuccess');
+  s.style.display='block';
+  setTimeout(()=>{s.style.display='none';},4000);
+}
+function submitSub(){
+  const email=document.getElementById('subEmail').value;
+  if(!email||!email.includes('@')) return;
+  if(!subscribers.includes(email)) subscribers.push(email);
+  try{localStorage.setItem('subscribers',JSON.stringify(subscribers));}catch(e){}
+  document.getElementById('subSuccess').style.display='block';
+  document.getElementById('subEmail').value='';
+  setTimeout(()=>{document.getElementById('subSuccess').style.display='none';},4000);
+}
+
+// ===== ADMIN =====
+function checkAdmin(){
+  if(document.getElementById('adminPw').value==='tbilisi2024'){
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminContent').classList.add('show');
+    renderAdminCharts();
+    renderBookingTable();
+    renderPhotoGrid();
+    renderRulesAdmin();
+    renderSubList();
+    loadDesc();
+    const storedAbout=localStorage.getItem('aboutMe')||'';
+    document.getElementById('aboutMeText').value=storedAbout;
+  } else {
+    document.getElementById('adminErr').style.display='block';
+  }
+}
+function openAdmin(){
+  document.getElementById('adminOverlay').classList.add('open');
+  document.getElementById('adminPanel').classList.add('open');
+}
+function closeAdmin(){
+  document.getElementById('adminOverlay').classList.remove('open');
+  document.getElementById('adminPanel').classList.remove('open');
+}
+
+// --- Photo management ---
+function renderPhotoGrid(){
+  const id=document.getElementById('photoApt').value;
+  const photos=JSON.parse(localStorage.getItem('photos_'+id)||'null')||APTS[id].defaultPhotos;
+  const g=document.getElementById('photoGrid');
+  g.innerHTML=photos.map((p,i)=>`
+    <div style="position:relative">
+      <img class="photo-thumb" src="${p}" onclick="deletePhoto('${id}',${i})" title="Click to delete">
+      <div style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer" onclick="deletePhoto('${id}',${i})">×</div>
+    </div>
+  `).join('');
+}
+function handlePhotoUpload(event){
+  const id=document.getElementById('photoApt').value;
+  const files=Array.from(event.target.files);
+  const existing=JSON.parse(localStorage.getItem('photos_'+id)||'[]');
+  let loaded=0;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      existing.push(e.target.result);
+      loaded++;
+      if(loaded===files.length){
+        try{localStorage.setItem('photos_'+id,JSON.stringify(existing));}catch(err){
+          alert('Storage full — try uploading fewer/smaller photos.');
+          return;
+        }
+        APTS[id].photos=existing;
+        renderPhotoGrid();
+        renderCards();
+        initHero();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value='';
+}
+function deletePhoto(id,idx){
+  const photos=JSON.parse(localStorage.getItem('photos_'+id)||'[]');
+  photos.splice(idx,1);
+  try{localStorage.setItem('photos_'+id,JSON.stringify(photos));}catch(e){}
+  APTS[id].photos=photos.length?photos:APTS[id].defaultPhotos;
+  renderPhotoGrid();
+  renderCards();
+}
+function deleteAllPhotos(){
+  const id=document.getElementById('photoApt').value;
+  if(!confirm('Delete all photos for this apartment?')) return;
+  localStorage.removeItem('photos_'+id);
+  APTS[id].photos=APTS[id].defaultPhotos;
+  renderPhotoGrid();
+  renderCards();
+}
+
+// --- Descriptions ---
+function loadDesc(){
+  const id=document.getElementById('descApt').value;
+  document.getElementById('descText').value=customDescs[id]||APTS[id].desc[lang]||APTS[id].desc.en;
+}
+function saveDesc(){
+  const id=document.getElementById('descApt').value;
+  const val=document.getElementById('descText').value.trim();
+  customDescs[id]=val;
+  try{localStorage.setItem('customDescs',JSON.stringify(customDescs));}catch(e){}
+  alert('Description saved!');
+}
+
+// --- About me ---
+function saveAboutMe(){
+  const val=document.getElementById('aboutMeText').value.trim();
+  try{localStorage.setItem('aboutMe',val);}catch(e){}
+  document.getElementById('aboutText').textContent=val||T[lang].about_text;
+  alert('About me text saved!');
+}
+
+// --- Rules admin ---
+function renderRulesAdmin(){
+  const rules=getRules();
+  const g=document.getElementById('rulesAdmin');
+  g.innerHTML=rules.map((r,i)=>`
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
+      <span>${r.icon}</span>
+      <span style="flex:1;font-size:13px">${r.text_en}</span>
+      <button style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:12px;cursor:pointer" onclick="deleteRule(${i})">×</button>
+    </div>
+  `).join('');
+}
+function addRule(){
+  const icon=document.getElementById('ruleIcon').value.trim()||'📌';
+  const text=document.getElementById('ruleText').value.trim();
+  if(!text) return;
+  const rules=getRules().slice();
+  rules.push({icon,text_en:text,text_ka:text});
+  customRules=rules;
+  document.getElementById('ruleIcon').value='';
+  document.getElementById('ruleText').value='';
+  renderRulesAdmin();
+}
+function deleteRule(i){
+  const rules=getRules().slice();
+  rules.splice(i,1);
+  customRules=rules;
+  renderRulesAdmin();
+}
+function saveRules(){
+  try{localStorage.setItem('customRules',JSON.stringify(customRules));}catch(e){}
+  renderRules();
+  alert('Rules saved!');
+}
+
+// --- Revenue / charts ---
+function saveRevenue(){
+  const month=document.getElementById('revMonth').value;
+  const airbnb=parseFloat(document.getElementById('revAirbnb').value)||0;
+  const booking=parseFloat(document.getElementById('revBooking').value)||0;
+  const direct=parseFloat(document.getElementById('revDirect').value)||0;
+  if(!revenueData[month])revenueData[month]={};
+  revenueData[month]={airbnb,booking,direct};
+  try{localStorage.setItem('revenueData',JSON.stringify(revenueData));}catch(e){}
+  renderAdminCharts();
+}
+function renderAdminCharts(){
+  const month=(document.getElementById('revMonth')||{}).value||'2026-10';
+  const d=revenueData[month]||{airbnb:0,booking:0,direct:0};
+  const total=d.airbnb+d.booking+d.direct||1;
+  const rc=document.getElementById('revChart');
+  if(rc) rc.innerHTML=[
+    {label:'Airbnb',val:d.airbnb,color:'#FF385C'},
+    {label:'Booking',val:d.booking,color:'#003580'},
+    {label:'Direct',val:d.direct,color:'#1B6B4A'},
+  ].map(r=>`
+    <div class="chart-bar-row">
+      <div class="chart-bar-label">${r.label}</div>
+      <div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${Math.round(r.val/total*100)}%;background:${r.color}"></div></div>
+      <div class="chart-bar-val">$${r.val}</div>
+    </div>
+  `).join('');
+
+  const og=document.getElementById('occGrid');
+  if(og){
+    og.innerHTML=Object.entries(APTS).map(([id,a])=>{
+      const occ=Math.round(((a.reviews%30)||18)/30*100);
+      return `<div class="stat-box"><div class="stat-val">${occ}%</div><div class="stat-label">${a.name}</div></div>`;
+    }).join('');
+  }
+
+  const months=['2026-07','2026-08','2026-09','2026-10'];
+  const mc=document.getElementById('monthlyChart');
+  if(mc){
+    const maxV=Math.max(...months.map(m=>{const d=revenueData[m]||{};return(d.airbnb||0)+(d.booking||0)+(d.direct||0);}),1);
+    mc.innerHTML=months.map(m=>{
+      const d=revenueData[m]||{airbnb:0,booking:0,direct:0};
+      const tot=(d.airbnb||0)+(d.booking||0)+(d.direct||0);
+      return `<div class="chart-bar-row"><div class="chart-bar-label">${m.slice(5)}</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${Math.round(tot/maxV*100)}%"></div></div><div class="chart-bar-val">$${tot}</div></div>`;
+    }).join('');
+  }
+}
+
+// --- Bookings ---
+function renderBookingTable(){
+  const tbody=document.getElementById('bookingBody');
+  if(!tbody) return;
+  tbody.innerHTML=adminBookings.slice(-20).reverse().map(b=>`
+    <tr><td>${b.guest}</td><td>${b.apt}</td><td>$${b.rev}</td><td>${b.ch}</td></tr>
+  `).join('');
+}
+function addBooking(){
+  const b={guest:document.getElementById('bhGuest').value,apt:document.getElementById('bhApt').value,rev:document.getElementById('bhRev').value,ch:document.getElementById('bhCh').value,date:new Date().toISOString().split('T')[0]};
+  if(!b.guest||!b.rev) return;
+  adminBookings.push(b);
+  try{localStorage.setItem('adminBookings',JSON.stringify(adminBookings));}catch(e){}
+  renderBookingTable();
+  document.getElementById('bhGuest').value='';
+  document.getElementById('bhRev').value='';
+}
+
+// --- Price override ---
+function savePrice(){
+  const id=document.getElementById('prApt').value;
+  const p=parseFloat(document.getElementById('prPrice').value);
+  if(p>0){priceOverrides[id]=p;}else{delete priceOverrides[id];}
+  try{localStorage.setItem('priceOverrides',JSON.stringify(priceOverrides));}catch(e){}
+  renderCards();
+}
+
+// --- Date blocking ---
+function blockDate(){
+  const id=document.getElementById('blApt').value;
+  const d=document.getElementById('blDate').value;
+  if(!d) return;
+  if(!manualBlocked[id].includes(d)) manualBlocked[id].push(d);
+  try{localStorage.setItem('manualBlocked',JSON.stringify(manualBlocked));}catch(e){}
+}
+function unblockDate(){
+  const id=document.getElementById('blApt').value;
+  const d=document.getElementById('blDate').value;
+  manualBlocked[id]=manualBlocked[id].filter(x=>x!==d);
+  try{localStorage.setItem('manualBlocked',JSON.stringify(manualBlocked));}catch(e){}
+}
+
+// --- Subscribers ---
+function renderSubList(){
+  const g=document.getElementById('subList');
+  if(!subscribers.length){g.innerHTML='<p style="color:var(--fg2);font-size:13px">No subscribers yet.</p>';return;}
+  g.innerHTML=subscribers.map((e,i)=>`<div class="sub-list-item"><span>${e}</span><span style="color:var(--fg2);font-size:12px">#${i+1}</span></div>`).join('');
+}
+function clearSubs(){
+  if(!confirm('Clear all subscribers?')) return;
+  subscribers=[];
+  try{localStorage.setItem('subscribers',JSON.stringify(subscribers));}catch(e){}
+  renderSubList();
+}
+
+// ===== INIT =====
+renderCards();
+initHero();
+renderReviews('mel');
+renderNearby('mel');
+renderRules();
+renderFAQ();
+
+// Load saved about text
+const savedAbout=localStorage.getItem('aboutMe');
+if(savedAbout) document.getElementById('aboutText').textContent=savedAbout;
+
+// PWA
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+}
+</script>
 </body>
 </html>
